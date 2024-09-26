@@ -74,7 +74,7 @@ export default function App() {
             <BookIcon />
           </AppNavLink>
 
-          <AppNavLink to="settings">
+          <AppNavLink to="settings/profile">
             <SettingIcon />
           </AppNavLink>
         </ul>

@@ -1,7 +1,7 @@
 import { json, Outlet, useLoaderData } from "@remix-run/react";
 
 export const loader = () => {
-  return json({ message: "Hello from the loader!" });
+  return json({ message: "Hello from Settings!" });
 };
 
 export default function SettingsLayout() {
