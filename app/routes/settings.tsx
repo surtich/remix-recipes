@@ -1,14 +1,14 @@
 import { LoaderFunction } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { json, Outlet, useLoaderData } from "@remix-run/react";
 
 export const loader: LoaderFunction = () => {
-  return new Response(JSON.stringify({ message: "Hello from the loader!" }), {
-    status: 418,
-    headers: {
-      "Content-Type": "application/json",
-      custom: "hey",
-    },
-  });
+  return json(
+    { message: "Hello from the loader!" },
+    {
+      status: 418,
+      headers: { custom: "hey" },
+    }
+  );
 };
 
 export default function SettingsLayout() {
