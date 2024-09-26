@@ -22,13 +22,15 @@ export default function Pantry() {
             key={shelf.id}
             className={classNames(
               "border-2 border-primary rounded-md p-4",
-              "w-[calc(100vw-2rem)] flex-none snap-center"
+              "w-[calc(100vw-2rem)] flex-none snap-center h-fit"
             )}
           >
-            <h1 className="text-2xl font-extrabold">{shelf.name}</h1>
+            <h1 className="text-2xl font-extrabold mb-2">{shelf.name}</h1>
             <ul>
               {shelf.items.map((item) => (
-                <li key={item.id}>{item.name}</li>
+                <li key={item.id} className="py-2">
+                  {item.name}
+                </li>
               ))}
             </ul>
           </li>
