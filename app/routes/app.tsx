@@ -1,4 +1,4 @@
-import { NavLink } from "@remix-run/react";
+import { NavLink, Outlet } from "@remix-run/react";
 
 export default function App() {
   return (
@@ -7,6 +7,9 @@ export default function App() {
       <nav className="border-b-2 pb-2 mt-2">
         <NavLink to="/pantry">Pantry</NavLink>
       </nav>
+      <div className="py-4">
+        <Outlet />
+      </div>
     </div>
   );
 }
