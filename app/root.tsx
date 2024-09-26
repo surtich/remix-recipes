@@ -59,29 +59,37 @@ export default function App() {
     <>
       <nav className="bg-primary text-white">
         <ul className="flex flex-col">
-          <li>
-            <Link to="home">
-              <HomeIcon />
-            </Link>
-          </li>
-          <li>
-            <Link to="discover">
-              <DiscoverIcon />
-            </Link>
-          </li>
-          <li>
-            <Link to="app">
-              <BookIcon />
-            </Link>
-          </li>
-          <li>
-            <Link to="settings">
-              <SettingIcon />
-            </Link>
-          </li>
+          <AppNavLink to="/">
+            <HomeIcon />
+          </AppNavLink>
+
+          <AppNavLink to="discover">
+            <DiscoverIcon />
+          </AppNavLink>
+
+          <AppNavLink to="app">
+            <BookIcon />
+          </AppNavLink>
+
+          <AppNavLink to="settings">
+            <SettingIcon />
+          </AppNavLink>
         </ul>
       </nav>
       <Outlet />
     </>
+  );
+}
+
+type AppNavLinksProps = {
+  to: string;
+  children: React.ReactNode;
+};
+
+function AppNavLink({ to, children }: AppNavLinksProps) {
+  return (
+    <li>
+      <Link to={to}>{children}</Link>
+    </li>
   );
 }
