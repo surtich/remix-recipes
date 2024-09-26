@@ -12,8 +12,8 @@ import "./tailwind.css";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Remix Recipes" },
+    { name: "description", content: "Welcome to Remix Recipes app!" },
   ];
 };
 
