@@ -5,6 +5,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
+  useResolvedPath,
 } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 
@@ -88,16 +90,22 @@ type AppNavLinksProps = {
 };
 
 function AppNavLink({ to, children }: AppNavLinksProps) {
+  const path = useResolvedPath(to); //to tiene una path relativa, navigation.location.pathname la tiene absoluta. Con este hook se puede obtener la ruta absoluta a partir de una relativa.
+  const navigation = useNavigation();
+
+  const isLoading =
+    navigation.state == "loading" &&
+    navigation.location.pathname === path.pathname;
+
   return (
     <li className="w-16">
-      <NavLink to={to} reloadDocument>
+      <NavLink to={to}>
         {({ isActive }) => (
           <div
             className={classNames(
               "py-4 flex justify-center hover:bg-primary-light",
-              {
-                "bg-primary-light": isActive,
-              }
+              isActive ? "bg-primary-light" : "",
+              isLoading ? "animate-pulse bg-primary-light" : ""
             )}
           >
             {children}
