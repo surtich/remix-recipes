@@ -11,13 +11,18 @@ export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   return (
     <div>
-      <ul className={classNames("flex gap-8 overflow-x-auto")}>
+      <ul
+        className={classNames(
+          "flex gap-8 overflow-x-auto",
+          "snap-x snap-mandatory"
+        )}
+      >
         {data.map((shelf) => (
           <li
             key={shelf.id}
             className={classNames(
               "border-2 border-primary rounded-md p-4",
-              "w-[calc(100vw-2rem)] flex-none"
+              "w-[calc(100vw-2rem)] flex-none snap-center"
             )}
           >
             <h1 className="text-2xl font-extrabold">{shelf.name}</h1>
