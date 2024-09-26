@@ -79,7 +79,9 @@ export default function App() {
           </AppNavLink>
         </ul>
       </nav>
-      <Outlet />
+      <div className="p-4 w-full">
+        <Outlet />
+      </div>
     </>
   );
 }
