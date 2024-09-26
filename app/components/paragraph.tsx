@@ -1,9 +1,9 @@
-import "./paragraph.css";
+import classes from "./paragraph.module.css";
 
 type ParagraphProps = {
   children: string;
 };
 
 export default function Paragraph({ children }: ParagraphProps) {
-  return <p className="paragraph">{children}</p>;
+  return <p className={classes.paragraph}>{children}</p>;
 }
