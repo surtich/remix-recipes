@@ -88,8 +88,12 @@ type AppNavLinksProps = {
 
 function AppNavLink({ to, children }: AppNavLinksProps) {
   return (
-    <li>
-      <Link to={to}>{children}</Link>
+    <li className="w-16">
+      <Link to={to}>
+        <div className="py-4 flex justify-center hover:bg-primary-light">
+          {children}
+        </div>
+      </Link>
     </li>
   );
 }
