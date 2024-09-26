@@ -1,18 +1,11 @@
-import { LoaderFunction } from "@remix-run/node";
 import { json, Outlet, useLoaderData } from "@remix-run/react";
 
-export const loader: LoaderFunction = () => {
-  return json(
-    { message: "Hello from the loader!" },
-    {
-      status: 418,
-      headers: { custom: "hey" },
-    }
-  );
+export const loader = () => {
+  return json({ message: "Hello from the loader!" });
 };
 
 export default function SettingsLayout() {
-  const data = useLoaderData();
+  const data = useLoaderData<typeof loader>();
   return (
     <div>
       <h1>Settings Layout</h1>
