@@ -42,12 +42,6 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const matches = useMatches(); //Devuelve un array con los "matchs" de la ruta actual.
-
-  useEffect(() => {
-    console.log("matches", matches);
-  }, [matches]);
-
   return (
     <html lang="en">
       <head>
