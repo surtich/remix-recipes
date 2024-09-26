@@ -26,6 +26,11 @@ export default function Pantry() {
             )}
           >
             <h1 className="text-2xl font-extrabold">{shelf.name}</h1>
+            <ul>
+              {shelf.items.map((item) => (
+                <li key={item.id}>{item.name}</li>
+              ))}
+            </ul>
           </li>
         ))}
       </ul>
