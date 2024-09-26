@@ -9,7 +9,7 @@ export default function SettingsLayout() {
   return (
     <div>
       <h1>Settings Layout</h1>
-      <p>{data.values.message}</p>
+      <p>{data.message}</p>
       <Outlet />
     </div>
   );

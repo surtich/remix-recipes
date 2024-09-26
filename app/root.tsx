@@ -5,7 +5,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useMatches,
   useNavigation,
   useResolvedPath,
 } from "@remix-run/react";
@@ -19,7 +18,6 @@ import {
   SettingIcon,
 } from "./components/icons";
 import classNames from "classnames";
-import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return [
