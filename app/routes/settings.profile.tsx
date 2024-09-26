@@ -9,7 +9,7 @@ export default function Profile() {
   return (
     <div>
       <h1>appProfile</h1>
-      <p>{data.value.message}</p>
+      <p>{data.message}</p>
     </div>
   );
 }
