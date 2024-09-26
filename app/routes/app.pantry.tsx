@@ -1,8 +1,8 @@
 import { json, useLoaderData } from "@remix-run/react";
-import db from "~/db.server";
+import { getAllShelves } from "~/models/pantry-shelf.server";
 
 export const loader = async () => {
-  const shelves = await db.pantryShelf.findMany();
+  const shelves = await getAllShelves();
   return json(shelves);
 };
 
