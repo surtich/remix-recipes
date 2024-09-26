@@ -9,6 +9,12 @@ import {
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 
 import "./tailwind.css";
+import {
+  BookIcon,
+  DiscoverIcon,
+  HomeIcon,
+  SettingIcon,
+} from "./components/icons";
 
 export const meta: MetaFunction = () => {
   return [
@@ -54,16 +60,24 @@ export default function App() {
       <nav className="bg-primary text-white">
         <ul className="flex flex-col">
           <li>
-            <Link to="home">Home</Link>
+            <Link to="home">
+              <HomeIcon />
+            </Link>
           </li>
           <li>
-            <Link to="discover">Discover</Link>
+            <Link to="discover">
+              <DiscoverIcon />
+            </Link>
           </li>
           <li>
-            <Link to="app">App</Link>
+            <Link to="app">
+              <BookIcon />
+            </Link>
           </li>
           <li>
-            <Link to="settings">Settings</Link>
+            <Link to="settings">
+              <SettingIcon />
+            </Link>
           </li>
         </ul>
       </nav>
