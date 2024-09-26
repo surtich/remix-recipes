@@ -1,7 +1,7 @@
 import {
-  Link,
   Links,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -15,6 +15,7 @@ import {
   HomeIcon,
   SettingIcon,
 } from "./components/icons";
+import classNames from "classnames";
 
 export const meta: MetaFunction = () => {
   return [
@@ -89,11 +90,20 @@ type AppNavLinksProps = {
 function AppNavLink({ to, children }: AppNavLinksProps) {
   return (
     <li className="w-16">
-      <Link to={to}>
-        <div className="py-4 flex justify-center hover:bg-primary-light">
-          {children}
-        </div>
-      </Link>
+      <NavLink to={to}>
+        {({ isActive }) => (
+          <div
+            className={classNames(
+              "py-4 flex justify-center hover:bg-primary-light",
+              {
+                "bg-primary-light": isActive,
+              }
+            )}
+          >
+            {children}
+          </div>
+        )}
+      </NavLink>
     </li>
   );
 }
