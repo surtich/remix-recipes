@@ -14,7 +14,7 @@ export default function Pantry() {
       <ul
         className={classNames(
           "flex gap-8 overflow-x-auto",
-          "snap-x snap-mandatory"
+          "snap-x snap-mandatory md:snap-none"
         )}
       >
         {data.map((shelf) => (
@@ -22,7 +22,8 @@ export default function Pantry() {
             key={shelf.id}
             className={classNames(
               "border-2 border-primary rounded-md p-4",
-              "w-[calc(100vw-2rem)] flex-none snap-center h-fit"
+              "w-[calc(100vw-2rem)] flex-none snap-center h-fit",
+              "md:w-96"
             )}
           >
             <h1 className="text-2xl font-extrabold mb-2">{shelf.name}</h1>
