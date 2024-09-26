@@ -13,7 +13,12 @@ export default function Pantry() {
     <div>
       <ul className={classNames("flex gap-8 overflow-x-auto")}>
         {data.map((shelf) => (
-          <li key={shelf.id}>{shelf.name}</li>
+          <li
+            key={shelf.id}
+            className={classNames("border-2 border-primary rounded-md p-4")}
+          >
+            <h1 className="text-2xl font-extrabold">{shelf.name}</h1>
+          </li>
         ))}
       </ul>
     </div>
