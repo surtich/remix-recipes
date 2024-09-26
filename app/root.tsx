@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useMatches,
   useNavigation,
   useResolvedPath,
 } from "@remix-run/react";
@@ -18,6 +19,7 @@ import {
   SettingIcon,
 } from "./components/icons";
 import classNames from "classnames";
+import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -40,6 +42,12 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const matches = useMatches(); //Devuelve un array con los "matchs" de la ruta actual.
+
+  useEffect(() => {
+    console.log("matches", matches);
+  }, [matches]);
+
   return (
     <html lang="en">
       <head>
@@ -74,7 +82,7 @@ export default function App() {
             <BookIcon />
           </AppNavLink>
 
-          <AppNavLink to="settings/profile">
+          <AppNavLink to="settings">
             <SettingIcon />
           </AppNavLink>
         </ul>

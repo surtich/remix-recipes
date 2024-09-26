@@ -1,7 +1,7 @@
 import { json, useLoaderData } from "@remix-run/react";
 
 export const loader = () => {
-  return json({ message: "Hello from Settings!" });
+  return json({ message: "Hello from Profile!" });
 };
 
 export default function Profile() {
