@@ -31,7 +31,7 @@ const deleteShelfSchema = z.object({
 
 const saveShelfNameSchema = z.object({
   shelfId: z.string(),
-  shelfName: z.string().min(1, "Shelf name can not be blank"),
+  shelfName: z.string().min(1, "Shelf name cannot be blank"),
 });
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -140,7 +140,7 @@ function Shelf({ shelf }: ShelfProps) {
     deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
     deleteShelfFetcher.formData?.get("shelfId") === shelf.id;
 
-  return (
+  return isDeletingShelf ? null : (
     <li
       key={shelf.id}
       className={classNames(
@@ -183,13 +183,8 @@ function Shelf({ shelf }: ShelfProps) {
       </ul>
       <deleteShelfFetcher.Form method="post" className="pt-8">
         <input type="hidden" name="shelfId" value={shelf.id} />
-        <DeleteButton
-          name="_action"
-          value="deleteShelf"
-          className="w-full"
-          isLoading={isDeletingShelf}
-        >
-          {isDeletingShelf ? "Deleting Shelf" : "Delete Shelf"}
+        <DeleteButton name="_action" value="deleteShelf" className="w-full">
+          Delete Shelf
         </DeleteButton>
       </deleteShelfFetcher.Form>
     </li>
