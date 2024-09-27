@@ -199,6 +199,17 @@ function Shelf({ shelf }: ShelfProps) {
                 ? "border-b-red-600"
                 : ""
             )}
+            onChange={(event) =>
+              event.target.value &&
+              saveShelfNameFetcher.submit(
+                {
+                  _action: "saveShelfName",
+                  shelfId: shelf.id,
+                  shelfName: event.target.value,
+                },
+                { method: "post" }
+              )
+            }
           />
           <ErrorMessage>
             {saveShelfNameFetcher.data?.errors?.shelfName}
