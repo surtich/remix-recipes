@@ -26,8 +26,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 const deleteShelfSchema = z.object({
-  // cambiamos para forzar el error
-  shelfId: z.number(),
+  shelfId: z.string(),
 });
 
 const saveShelfNameSchema = z.object({
@@ -49,7 +48,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         formData,
         deleteShelfSchema,
         (data) => deleteShelf(data.shelfId),
-        (errors) => json({ errors })
+        (errors) => json({ errors }, { status: 400 })
       );
     }
     case "saveShelfName": {
@@ -57,7 +56,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         formData,
         saveShelfNameSchema,
         (data) => saveShelfName(data.shelfId, data.shelfName),
-        (errors) => json({ errors })
+        (errors) => json({ errors }, { status: 400 })
       );
     }
     default: {
@@ -166,14 +165,17 @@ function Shelf({ shelf }: ShelfProps) {
                 : ""
             )}
           />
-          <span className="text-red-600 text-sm">
+          <ErrorMessage>
             {saveShelfNameFetcher.data?.errors?.shelfName}
-          </span>
+          </ErrorMessage>
         </div>
         <button name="_action" value="saveShelfName" className="ml-4">
           <SaveIcon />
         </button>
         <input type="hidden" name="shelfId" value={shelf.id} />
+        <ErrorMessage className="pb-2">
+          {saveShelfNameFetcher.data?.errors?.shelfId}
+        </ErrorMessage>
       </saveShelfNameFetcher.Form>
       <ul>
         {shelf.items.map((item) => (
