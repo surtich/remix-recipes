@@ -60,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <>
-      <nav className="bg-primary text-white">
+      <nav className="bg-primary text-white md:w-16">
         <ul className="flex md:flex-col">
           <AppNavLink to="/">
             <HomeIcon />
@@ -79,7 +79,7 @@ export default function App() {
           </AppNavLink>
         </ul>
       </nav>
-      <div className="p-4 w-full">
+      <div className="p-4 w-full md:w-[calc(100%-4rem)]">
         <Outlet />
       </div>
     </>

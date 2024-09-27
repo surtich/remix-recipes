@@ -58,7 +58,7 @@ export default function Pantry() {
       </Form>
       <ul
         className={classNames(
-          "flex gap-8 overflow-x-auto mt-4",
+          "flex gap-8 overflow-x-auto mt-4 pb-4",
           "snap-x snap-mandatory md:snap-none"
         )}
       >
