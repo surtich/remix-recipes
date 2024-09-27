@@ -15,6 +15,9 @@ export function getAllShelves(query: string | null) {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 }
 
