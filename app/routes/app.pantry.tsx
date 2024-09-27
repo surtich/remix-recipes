@@ -31,7 +31,7 @@ const deleteShelfSchema = z.object({
 
 const saveShelfNameSchema = z.object({
   shelfId: z.string(),
-  shelfName: z.string().min(1),
+  shelfName: z.string().min(1, "Shelf name can not be blank"),
 });
 
 export const action = async ({ request }: ActionFunctionArgs) => {
