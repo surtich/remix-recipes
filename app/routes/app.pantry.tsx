@@ -187,6 +187,7 @@ function Shelf({ shelf }: ShelfProps) {
         <div className="w-full mb-2">
           <input
             type="text"
+            required
             defaultValue={shelf.name}
             name="shelfName"
             placeholder="Shelf Name"
@@ -237,6 +238,7 @@ function Shelf({ shelf }: ShelfProps) {
         <div className="w-full mb-2">
           <input
             type="text"
+            required
             name="itemName"
             placeholder="New Item"
             autoComplete="off"
