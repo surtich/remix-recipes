@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { z } from "zod";
 import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
@@ -166,7 +166,10 @@ function Shelf({ shelf }: ShelfProps) {
   const saveShelfNameFetcher = useFetcher();
   const createShelfItemFetcher = useFetcher();
   const createItemFormRef = useRef<HTMLFormElement>(null);
-  const { renderedItems, addItem } = useOptimisticItems(shelf.items);
+  const { renderedItems, addItem } = useOptimisticItems(
+    shelf.items,
+    createShelfItemFetcher.state
+  );
   const isDeletingShelf =
     deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
     deleteShelfFetcher.formData?.get("shelfId") === shelf.id;
@@ -305,9 +308,13 @@ function ShelfItem({ shelfItem }: ShelfItemProps) {
 type RenderedItem = {
   id: string;
   name: string;
+  isOptimistic?: boolean;
 };
 
-function useOptimisticItems(savedItems: Array<RenderedItem>) {
+function useOptimisticItems(
+  savedItems: Array<RenderedItem>,
+  createShelfItemState: "idle" | "submitting" | "loading"
+) {
   const [optimisticItems, setOptimisticItems] = useState<Array<RenderedItem>>(
     []
   );
@@ -322,8 +329,12 @@ function useOptimisticItems(savedItems: Array<RenderedItem>) {
   });
 
   useServerLayoutEffect(() => {
-    setOptimisticItems([]);
-  }, savedItems);
+    // este estado se alcanza cuando el fetcher ha finalizado la revalidación
+    console.log(">>>", createShelfItemState);
+    if (createShelfItemState === "idle") {
+      setOptimisticItems([]);
+    }
+  }, [createShelfItemState]);
 
   const addItem = (name: string) => {
     setOptimisticItems((items) => [
