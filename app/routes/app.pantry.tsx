@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
@@ -163,6 +163,7 @@ function Shelf({ shelf }: ShelfProps) {
   const deleteShelfFetcher = useFetcher();
   const saveShelfNameFetcher = useFetcher();
   const createShelfItemFetcher = useFetcher();
+  const createItemFormRef = useRef<HTMLFormElement>(null);
   const { renderedItems, addItem } = useOptimisticItems(shelf.items);
   const isDeletingShelf =
     deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
@@ -209,12 +210,14 @@ function Shelf({ shelf }: ShelfProps) {
       <createShelfItemFetcher.Form
         method="post"
         className="flex py-2"
+        ref={createItemFormRef}
         onSubmit={(event) => {
           const target = event.target as HTMLFormElement;
           const itemNameInput = target.elements.namedItem(
             "itemName"
           ) as HTMLInputElement;
           addItem(itemNameInput.value);
+          createItemFormRef.current?.reset();
         }}
       >
         <div className="w-full mb-2">
