@@ -44,6 +44,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return createShelf();
     }
     case "deleteShelf": {
+      return null;
       return validateForm(
         formData,
         deleteShelfSchema,
