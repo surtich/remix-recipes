@@ -7,6 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
+import { z } from "zod";
 import { DeleteButton, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SaveIcon, SearchIcon } from "~/components/icons";
 import {
@@ -27,6 +28,11 @@ type FieldErrors = {
   [key: string]: string;
 };
 
+const saveShelfNameSchema = z.object({
+  shelfId: z.string(),
+  shelfName: z.string().min(1),
+});
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   switch (
@@ -46,24 +52,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return deleteShelf(shelfId);
     }
     case "saveShelfName": {
-      const shelfId = formData.get("shelfId");
-      const shelfName = formData.get("shelfName");
-      const errors: FieldErrors = {};
+      const result = saveShelfNameSchema.safeParse(
+        Object.fromEntries(formData)
+      );
+      if (!result.success) {
+        const errors: FieldErrors = {};
+        // consultar la documentación de la gestión de errores con zod (https://zod.dev/ERROR_HANDLING)
+        result.error.issues.forEach((issue) => {
+          const path = issue.path.join(".");
 
-      if (
-        typeof shelfId === "string" &&
-        typeof shelfName === "string" &&
-        shelfName.trim() !== ""
-      ) {
-        return saveShelfName(shelfId, shelfName);
+          errors[path] = issue.message;
+        });
+        return json({ errors });
       }
-      if (typeof shelfId !== "string") {
-        errors["shelfId"] = "Shelf ID must be a string";
-      }
-      if (typeof shelfName !== "string" || shelfName.trim() === "") {
-        errors["shelfName"] = "Shelf Name must be a non empty string";
-      }
-      return json({ errors });
+      const { shelfId, shelfName } = result.data;
+      return saveShelfName(shelfId, shelfName);
     }
     default: {
       return null;
