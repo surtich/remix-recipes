@@ -7,6 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
@@ -154,11 +155,7 @@ type ShelfItem = {
 };
 
 type ShelfProps = {
-  shelf: {
-    id: string;
-    name: string;
-    items: ShelfItem[];
-  };
+  shelf: RenderedItems;
 };
 
 function Shelf({ shelf }: ShelfProps) {
@@ -166,6 +163,7 @@ function Shelf({ shelf }: ShelfProps) {
   const deleteShelfFetcher = useFetcher();
   const saveShelfNameFetcher = useFetcher();
   const createShelfItemFetcher = useFetcher();
+  const { renderedItems, addItem } = useOptimisticItems(shelf.items);
   const isDeletingShelf =
     deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
     deleteShelfFetcher.formData?.get("shelfId") === shelf.id;
@@ -211,7 +209,13 @@ function Shelf({ shelf }: ShelfProps) {
       <createShelfItemFetcher.Form
         method="post"
         className="flex py-2"
-        reloadDocument
+        onSubmit={(event) => {
+          const target = event.target as HTMLFormElement;
+          const itemNameInput = target.elements.namedItem(
+            "itemName"
+          ) as HTMLInputElement;
+          addItem(itemNameInput.value);
+        }}
       >
         <div className="w-full mb-2">
           <input
@@ -241,7 +245,7 @@ function Shelf({ shelf }: ShelfProps) {
       </createShelfItemFetcher.Form>
 
       <ul>
-        {shelf.items.map((item) => (
+        {renderedItems.map((item) => (
           <ShelfItem key={item.id} shelfItem={item} />
         ))}
       </ul>
@@ -283,4 +287,37 @@ function ShelfItem({ shelfItem }: ShelfItemProps) {
       </deleteShelfItemFetcher.Form>
     </li>
   );
+}
+
+type RenderedItem = {
+  id: string;
+  name: string;
+};
+
+function useOptimisticItems(savedItems: Array<RenderedItem>) {
+  const [optimisticItems, setOptimisticItems] = useState<Array<RenderedItem>>(
+    []
+  );
+
+  const renderedItems = [...optimisticItems, ...savedItems];
+
+  renderedItems.sort((a, b) => {
+    if (a.name === b.name) {
+      return 0;
+    }
+    return a.name < b.name ? -1 : 1;
+  });
+
+  useEffect(() => {
+    setOptimisticItems([]);
+  }, savedItems);
+
+  const addItem = (name: string) => {
+    setOptimisticItems((items) => [...items, { id: createItemId(), name }]);
+  };
+  return { renderedItems, addItem };
+}
+
+function createItemId() {
+  return `${Math.round(Math.random() * 1_000_000)}`;
 }
