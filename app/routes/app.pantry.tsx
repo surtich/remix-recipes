@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs } from "@remix-run/node";
-import { json, useLoaderData } from "@remix-run/react";
+import { json, useLoaderData, useSearchParams } from "@remix-run/react";
 import classNames from "classnames";
 import { SearchIcon } from "~/components/icons";
 import { getAllShelves } from "~/models/pantry-shelf.server";
@@ -13,6 +13,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Pantry() {
   const data = useLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
   return (
     <div>
       <form
@@ -27,6 +28,7 @@ export default function Pantry() {
         <input
           type="text"
           name="q"
+          defaultValue={searchParams.get("q") ?? ""}
           autoComplete="off"
           placeholder="Search Shelves..."
           className="w-full py-3 px-2 outline-none"
