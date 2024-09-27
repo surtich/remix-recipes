@@ -47,7 +47,7 @@ export default function Pantry() {
         />
       </Form>
       <Form reloadDocument>
-        <PrimaryButton className="mt-4 w-full">
+        <PrimaryButton className="mt-4 w-full md:w-fit">
           <PlusIcon />
           <span className="pl-2">Create Shelf</span>
         </PrimaryButton>
