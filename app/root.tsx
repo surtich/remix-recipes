@@ -79,7 +79,7 @@ export default function App() {
           </AppNavLink>
         </ul>
       </nav>
-      <div className="p-4 w-full md:w-[calc(100%-4rem)]">
+      <div className="p-4 w-full md:w-[calc(100%-4rem)] overflow-y-auto">
         <Outlet />
       </div>
     </>
