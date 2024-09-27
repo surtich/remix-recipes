@@ -26,7 +26,7 @@ export default function Pantry() {
           name="q"
           autoComplete="off"
           placeholder="Search Shelves..."
-          className="w-full py-3 px-2"
+          className="w-full py-3 px-2 outline-none"
         />
       </form>
       <ul
