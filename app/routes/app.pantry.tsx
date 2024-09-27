@@ -15,10 +15,10 @@ export default function Pantry() {
       <form
         className={classNames(
           "flex border-2 border-gray-300 rounded-md",
-          "focus-within:border-primary"
+          "focus-within:border-primary md:w-80"
         )}
       >
-        <button className="px-2">
+        <button className="px-2 mr-1">
           <SearchIcon />
         </button>
         <input
