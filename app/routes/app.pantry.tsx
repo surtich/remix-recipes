@@ -1,10 +1,13 @@
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { json, useLoaderData } from "@remix-run/react";
 import classNames from "classnames";
 import { SearchIcon } from "~/components/icons";
 import { getAllShelves } from "~/models/pantry-shelf.server";
 
-export const loader = async () => {
-  const shelves = await getAllShelves();
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  const shelves = await getAllShelves(q);
   return json(shelves);
 };
 
