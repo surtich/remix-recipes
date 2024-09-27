@@ -16,16 +16,13 @@ import {
   getAllShelves,
   saveShelfName,
 } from "~/models/pantry-shelf.server";
+import { validateForm } from "~/utils/validation";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const shelves = await getAllShelves(q);
   return json(shelves);
-};
-
-type FieldErrors = {
-  [key: string]: string;
 };
 
 const saveShelfNameSchema = z.object({
@@ -52,21 +49,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return deleteShelf(shelfId);
     }
     case "saveShelfName": {
-      const result = saveShelfNameSchema.safeParse(
-        Object.fromEntries(formData)
+      return validateForm(
+        formData,
+        saveShelfNameSchema,
+        (data) => saveShelfName(data.shelfId, data.shelfName),
+        (errors) => json({ errors })
       );
-      if (!result.success) {
-        const errors: FieldErrors = {};
-        // consultar la documentación de la gestión de errores con zod (https://zod.dev/ERROR_HANDLING)
-        result.error.issues.forEach((issue) => {
-          const path = issue.path.join(".");
-
-          errors[path] = issue.message;
-        });
-        return json({ errors });
-      }
-      const { shelfId, shelfName } = result.data;
-      return saveShelfName(shelfId, shelfName);
     }
     default: {
       return null;
