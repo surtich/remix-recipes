@@ -51,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className="md:flex md:h-screen">
         {children}
         <ScrollRestoration />
-        <Scripts />
+        {/* <Scripts /> */}
       </body>
     </html>
   );
