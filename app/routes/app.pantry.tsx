@@ -9,7 +9,7 @@ import {
 import classNames from "classnames";
 import { PrimaryButton } from "~/components/forms";
 import { PlusIcon, SearchIcon } from "~/components/icons";
-import { getAllShelves } from "~/models/pantry-shelf.server";
+import { createShelf, getAllShelves } from "~/models/pantry-shelf.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -19,7 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async () => {
-  return null;
+  return createShelf();
 };
 
 export default function Pantry() {
