@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { z } from "zod";
 import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
@@ -308,7 +308,7 @@ function useOptimisticItems(savedItems: Array<RenderedItem>) {
     return a.name < b.name ? -1 : 1;
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setOptimisticItems([]);
   }, savedItems);
 
