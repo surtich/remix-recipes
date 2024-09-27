@@ -12,13 +12,19 @@ export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   return (
     <div>
-      <form className="flex border-2 border-gray-300 rounded-md">
+      <form
+        className={classNames(
+          "flex border-2 border-gray-300 rounded-md",
+          "focus-within:border-primary"
+        )}
+      >
         <button className="px-2">
           <SearchIcon />
         </button>
         <input
           type="text"
           name="q"
+          autoComplete="off"
           placeholder="Search Shelves..."
           className="w-full py-3 px-2"
         />
