@@ -25,6 +25,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json(shelves);
 };
 
+const deleteShelfSchema = z.object({
+  shelfId: z.string(),
+});
+
 const saveShelfNameSchema = z.object({
   shelfId: z.string(),
   shelfName: z.string().min(1),
@@ -40,13 +44,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return createShelf();
     }
     case "deleteShelf": {
-      const shelfId = formData.get("shelfId");
-      if (typeof shelfId !== "string") {
-        return json({
-          errors: { errors: { shelfId: "Shelf ID must be a string" } },
-        });
-      }
-      return deleteShelf(shelfId);
+      return validateForm(
+        formData,
+        deleteShelfSchema,
+        (data) => deleteShelf(data.shelfId),
+        (errors) => json({ errors })
+      );
     }
     case "saveShelfName": {
       return validateForm(
