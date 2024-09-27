@@ -1,10 +1,7 @@
 import classNames from "classnames";
+import type { ButtonHTMLAttributes } from "react";
 
-type ButtonProps = {
-  children: React.ReactNode;
-  className?: string;
-  name?: string;
-};
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export function Button({ children, className, ...props }: ButtonProps) {
   return (
@@ -26,6 +23,19 @@ export function PrimaryButton({ className, ...props }: ButtonProps) {
       {...props}
       className={classNames(
         "text-white bg-primary hover:bg-primary-light",
+        className
+      )}
+    />
+  );
+}
+
+export function DeleteButton({ className, ...props }: ButtonProps) {
+  return (
+    <Button
+      {...props}
+      className={classNames(
+        "border-2 border-red-2 text-red-600",
+        "hover:bg-red-600 hover:text-white",
         className
       )}
     />
