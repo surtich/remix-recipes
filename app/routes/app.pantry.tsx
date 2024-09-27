@@ -217,6 +217,15 @@ function Shelf({ shelf }: ShelfProps) {
             "itemName"
           ) as HTMLInputElement;
           addItem(itemNameInput.value);
+          event.preventDefault();
+          createShelfItemFetcher.submit(
+            {
+              itemName: itemNameInput.value,
+              shelfId: shelf.id,
+              _action: "createShelfItem",
+            },
+            { method: "post" }
+          );
           createItemFormRef.current?.reset();
         }}
       >
