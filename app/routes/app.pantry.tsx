@@ -11,7 +11,7 @@ export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   return (
     <div>
-      <form>
+      <form action="/">
         <input
           type="text"
           name="firstName"
