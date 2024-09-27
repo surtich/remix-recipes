@@ -18,6 +18,7 @@ import {
   getAllShelves,
   saveShelfName,
 } from "~/models/pantry-shelf.server";
+import { useServerLayoutEffect } from "~/utils/misc";
 import { validateForm } from "~/utils/validation";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -319,7 +320,7 @@ function useOptimisticItems(savedItems: Array<RenderedItem>) {
     return a.name < b.name ? -1 : 1;
   });
 
-  useLayoutEffect(() => {
+  useServerLayoutEffect(() => {
     setOptimisticItems([]);
   }, savedItems);
 
