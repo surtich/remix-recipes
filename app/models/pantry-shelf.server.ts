@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
 import db from "~/db.server";
+import { handleDelete } from "./utils";
 
 export function getAllShelves(query: string | null) {
   return db.pantryShelf.findMany({
@@ -30,23 +30,14 @@ export function createShelf() {
   });
 }
 
-export async function deleteShelf(shelfId: string) {
-  try {
-    const deleted = await db.pantryShelf.delete({
+export function deleteShelf(shelfId: string) {
+  return handleDelete(() =>
+    db.pantryShelf.delete({
       where: {
         id: shelfId,
       },
-    });
-    return deleted;
-  } catch (error) {
-    // En la traza del error del servidor se va que se produce un error de este tipo cuando se intenta borrar una estantería que no existe.
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
-        return error.message;
-      }
-      throw error;
-    }
-  }
+    })
+  );
 }
 
 export function saveShelfName(shelfId: string, shelfName: string) {

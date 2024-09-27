@@ -9,8 +9,8 @@ import {
 import classNames from "classnames";
 import { z } from "zod";
 import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
-import { PlusIcon, SaveIcon, SearchIcon } from "~/components/icons";
-import { createShelfItem } from "~/models/pantry-items.server";
+import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
+import { createShelfItem, deleteShelfItem } from "~/models/pantry-items.server";
 import {
   createShelf,
   deleteShelf,
@@ -38,6 +38,10 @@ const saveShelfNameSchema = z.object({
 const createShelfItemSchema = z.object({
   shelfId: z.string(),
   itemName: z.string().min(1, "Item name cannot be blank"),
+});
+
+const deleteShelfItemSchema = z.object({
+  itemId: z.string(),
 });
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -70,6 +74,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         formData,
         createShelfItemSchema,
         (data) => createShelfItem(data.shelfId, data.itemName),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    case "deleteShelfItem": {
+      return validateForm(
+        formData,
+        deleteShelfItemSchema,
+        (data) => deleteShelfItem(data.itemId),
         (errors) => json({ errors }, { status: 400 })
       );
     }
@@ -136,18 +148,21 @@ export default function Pantry() {
   );
 }
 
+type ShelfItem = {
+  id: string;
+  name: string;
+};
+
 type ShelfProps = {
   shelf: {
     id: string;
     name: string;
-    items: {
-      id: string;
-      name: string;
-    }[];
+    items: ShelfItem[];
   };
 };
 
 function Shelf({ shelf }: ShelfProps) {
+  // useFetcher() can only be called at a component level that's why we extract the code to its own component
   const deleteShelfFetcher = useFetcher();
   const saveShelfNameFetcher = useFetcher();
   const createShelfItemFetcher = useFetcher();
@@ -227,9 +242,7 @@ function Shelf({ shelf }: ShelfProps) {
 
       <ul>
         {shelf.items.map((item) => (
-          <li key={item.id} className="py-2">
-            {item.name}
-          </li>
+          <ShelfItem key={item.id} shelfItem={item} />
         ))}
       </ul>
       <deleteShelfFetcher.Form method="post" className="pt-8">
@@ -241,6 +254,33 @@ function Shelf({ shelf }: ShelfProps) {
           Delete Shelf
         </DeleteButton>
       </deleteShelfFetcher.Form>
+    </li>
+  );
+}
+
+type ShelfItemProps = {
+  shelfItem: ShelfItem;
+};
+
+function ShelfItem({ shelfItem }: ShelfItemProps) {
+  const deleteShelfItemFetcher = useFetcher();
+
+  return (
+    <li className="py-2">
+      <deleteShelfItemFetcher.Form
+        method="post"
+        className="flex"
+        reloadDocument
+      >
+        <p className="w-full">{shelfItem.name}</p>
+        <button name="_action" value="deleteShelfItem">
+          <TrashIcon />
+        </button>
+        <input type="hidden" name="itemId" value={shelfItem.id} />
+        <ErrorMessage>
+          {deleteShelfItemFetcher.data?.errors?.itemId}
+        </ErrorMessage>
+      </deleteShelfItemFetcher.Form>
     </li>
   );
 }
