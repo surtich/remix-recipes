@@ -12,20 +12,20 @@ export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   return (
     <div>
-      <form>
-        <button>
+      <form className="flex border-2 border-gray-300 rounded-md">
+        <button className="px-2">
           <SearchIcon />
         </button>
         <input
           type="text"
           name="q"
           placeholder="Search Shelves..."
-          className="border-2 border-grey-300"
+          className="w-full py-3 px-2"
         />
       </form>
       <ul
         className={classNames(
-          "flex gap-8 overflow-x-auto",
+          "flex gap-8 overflow-x-auto mt-4",
           "snap-x snap-mandatory md:snap-none"
         )}
       >
