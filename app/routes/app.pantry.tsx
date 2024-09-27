@@ -1,5 +1,6 @@
 import { json, useLoaderData } from "@remix-run/react";
 import classNames from "classnames";
+import { SearchIcon } from "~/components/icons";
 import { getAllShelves } from "~/models/pantry-shelf.server";
 
 export const loader = async () => {
@@ -11,18 +12,16 @@ export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   return (
     <div>
-      <form action="/">
+      <form>
+        <button>
+          <SearchIcon />
+        </button>
         <input
           type="text"
-          name="firstName"
+          name="q"
+          placeholder="Search Shelves..."
           className="border-2 border-grey-300"
         />
-        <input
-          type="text"
-          name="lastName"
-          className="border-2 border-grey-300"
-        />
-        <button>Submit</button>
       </form>
       <ul
         className={classNames(
