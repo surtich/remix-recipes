@@ -1,4 +1,5 @@
 import {
+  Link,
   Links,
   Meta,
   NavLink,
@@ -7,6 +8,7 @@ import {
   ScrollRestoration,
   useNavigation,
   useResolvedPath,
+  useRouteError,
 } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 
@@ -116,5 +118,34 @@ function AppNavLink({ to, children }: AppNavLinksProps) {
         )}
       </NavLink>
     </li>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  return (
+    <html lang="en">
+      <head>
+        <title>Woops!</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <div className="p-4">
+          <h1 className="text-2xl pb-3">Woops!</h1>
+          <p>
+            You&apos;re seeing this page because an unexpected error ocurred.
+          </p>
+          {error instanceof Error ? (
+            <p className="my-4 font-bold">{error.message}</p>
+          ) : null}
+          <Link to="/" className="text-primary">
+            Go back to the home page
+          </Link>
+        </div>
+      </body>
+    </html>
   );
 }
