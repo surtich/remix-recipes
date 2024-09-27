@@ -8,7 +8,7 @@ import {
 } from "@remix-run/react";
 import classNames from "classnames";
 import { z } from "zod";
-import { DeleteButton, PrimaryButton } from "~/components/forms";
+import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SaveIcon, SearchIcon } from "~/components/icons";
 import {
   createShelf,
@@ -26,7 +26,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 const deleteShelfSchema = z.object({
-  shelfId: z.string(),
+  // cambiamos para forzar el error
+  shelfId: z.number(),
 });
 
 const saveShelfNameSchema = z.object({
@@ -44,7 +45,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return createShelf();
     }
     case "deleteShelf": {
-      return null;
       return validateForm(
         formData,
         deleteShelfSchema,
@@ -184,6 +184,9 @@ function Shelf({ shelf }: ShelfProps) {
       </ul>
       <deleteShelfFetcher.Form method="post" className="pt-8">
         <input type="hidden" name="shelfId" value={shelf.id} />
+        <ErrorMessage className="pb-2">
+          {deleteShelfFetcher.data?.errors?.shelfId}
+        </ErrorMessage>
         <DeleteButton name="_action" value="deleteShelf" className="w-full">
           Delete Shelf
         </DeleteButton>
