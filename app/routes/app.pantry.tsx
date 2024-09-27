@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
-import { SearchIcon } from "~/components/icons";
+import { PlusIcon, SearchIcon } from "~/components/icons";
 import { getAllShelves } from "~/models/pantry-shelf.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -44,6 +44,12 @@ export default function Pantry() {
           placeholder="Search Shelves..."
           className="w-full py-3 px-2 outline-none"
         />
+      </Form>
+      <Form reloadDocument>
+        <button>
+          <PlusIcon />
+          <span>Create Shelf</span>
+        </button>
       </Form>
       <ul
         className={classNames(
