@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs } from "@remix-run/node";
-import { json, useLoaderData, useSearchParams } from "@remix-run/react";
+import { Form, json, useLoaderData, useSearchParams } from "@remix-run/react";
 import classNames from "classnames";
 import { SearchIcon } from "~/components/icons";
 import { getAllShelves } from "~/models/pantry-shelf.server";
@@ -16,7 +16,7 @@ export default function Pantry() {
   const [searchParams] = useSearchParams();
   return (
     <div>
-      <form
+      <Form
         className={classNames(
           "flex border-2 border-gray-300 rounded-md",
           "focus-within:border-primary md:w-80"
@@ -33,7 +33,7 @@ export default function Pantry() {
           placeholder="Search Shelves..."
           className="w-full py-3 px-2 outline-none"
         />
-      </form>
+      </Form>
       <ul
         className={classNames(
           "flex gap-8 overflow-x-auto mt-4",
