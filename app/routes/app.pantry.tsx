@@ -46,7 +46,7 @@ export default function Pantry() {
           className="w-full py-3 px-2 outline-none"
         />
       </Form>
-      <Form reloadDocument>
+      <Form method="post" reloadDocument>
         <PrimaryButton className="mt-4 w-full md:w-fit">
           <PlusIcon />
           <span className="pl-2">Create Shelf</span>
