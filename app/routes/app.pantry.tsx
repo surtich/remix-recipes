@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
 import {
   Form,
   json,
@@ -9,7 +9,11 @@ import {
 import classNames from "classnames";
 import { DeleteButton, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SearchIcon } from "~/components/icons";
-import { createShelf, getAllShelves } from "~/models/pantry-shelf.server";
+import {
+  createShelf,
+  deleteShelf,
+  getAllShelves,
+} from "~/models/pantry-shelf.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -18,8 +22,28 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json(shelves);
 };
 
-export const action = async () => {
-  return createShelf();
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  switch (
+    //get recibe la propiedad name y devuelve la propiedad value
+    formData.get("_action")
+  ) {
+    case "createShelf": {
+      return createShelf();
+    }
+    case "deleteShelf": {
+      const shelfId = formData.get("shelfId");
+      if (typeof shelfId !== "string") {
+        return json({
+          errors: { errors: { shelfId: "Shelf ID must be a string" } },
+        });
+      }
+      return deleteShelf(shelfId);
+    }
+    default: {
+      return null;
+    }
+  }
 };
 
 export default function Pantry() {
@@ -28,7 +52,7 @@ export default function Pantry() {
   const navigation = useNavigation();
 
   const isSearching = navigation.formData?.has("q"); // formData es un tipo de la API FormData (https://developer.mozilla.org/en-US/docs/Web/API/FormData)
-  const isCreatingShelf = navigation.formData?.has("createShelf");
+  const isCreatingShelf = navigation.formData?.get("_action") === "createShelf";
 
   return (
     <div>
@@ -53,7 +77,8 @@ export default function Pantry() {
       </Form>
       <Form method="post">
         <PrimaryButton
-          name="createShelf"
+          name="_action"
+          value="createShelf"
           className={classNames(
             "mt-4 w-full md:w-fit",
             isCreatingShelf ? "bg-primary-light " : ""
@@ -89,7 +114,12 @@ export default function Pantry() {
               ))}
             </ul>
             <Form method="post" className="pt-8">
-              <DeleteButton className="w-full" name="deleteShelf">
+              <input type="hidden" name="shelfId" value={shelf.id} />
+              <DeleteButton
+                name="_action"
+                value="deleteShelf"
+                className="w-full"
+              >
                 Delete Shelf
               </DeleteButton>
             </Form>
