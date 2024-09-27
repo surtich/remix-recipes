@@ -152,10 +152,11 @@ export default function Pantry() {
 type ShelfItem = {
   id: string;
   name: string;
+  isOptimistic?: boolean;
 };
 
 type ShelfProps = {
-  shelf: RenderedItems;
+  shelf: RenderedItem;
 };
 
 function Shelf({ shelf }: ShelfProps) {
@@ -283,15 +284,13 @@ function ShelfItem({ shelfItem }: ShelfItemProps) {
 
   return (
     <li className="py-2">
-      <deleteShelfItemFetcher.Form
-        method="post"
-        className="flex"
-        reloadDocument
-      >
+      <deleteShelfItemFetcher.Form method="post" className="flex">
         <p className="w-full">{shelfItem.name}</p>
-        <button name="_action" value="deleteShelfItem">
-          <TrashIcon />
-        </button>
+        {shelfItem.isOptimistic ? null : (
+          <button name="_action" value="deleteShelfItem">
+            <TrashIcon />
+          </button>
+        )}
         <input type="hidden" name="itemId" value={shelfItem.id} />
         <ErrorMessage>
           {deleteShelfItemFetcher.data?.errors?.itemId}
@@ -325,7 +324,10 @@ function useOptimisticItems(savedItems: Array<RenderedItem>) {
   }, savedItems);
 
   const addItem = (name: string) => {
-    setOptimisticItems((items) => [...items, { id: createItemId(), name }]);
+    setOptimisticItems((items) => [
+      ...items,
+      { id: createItemId(), name, isOptimistic: true },
+    ]);
   };
   return { renderedItems, addItem };
 }
