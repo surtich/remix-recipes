@@ -282,8 +282,9 @@ type ShelfItemProps = {
 
 function ShelfItem({ shelfItem }: ShelfItemProps) {
   const deleteShelfItemFetcher = useFetcher();
+  const isDeletingItem = !!deleteShelfItemFetcher.formData; // !! truco para convertir un valor en booleano
 
-  return (
+  return isDeletingItem ? null : (
     <li className="py-2">
       <deleteShelfItemFetcher.Form method="post" className="flex">
         <p className="w-full">{shelfItem.name}</p>
