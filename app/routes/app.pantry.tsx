@@ -1,5 +1,11 @@
 import { type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, json, useLoaderData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  json,
+  useLoaderData,
+  useNavigation,
+  useSearchParams,
+} from "@remix-run/react";
 import classNames from "classnames";
 import { SearchIcon } from "~/components/icons";
 import { getAllShelves } from "~/models/pantry-shelf.server";
@@ -14,12 +20,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
+  const navigation = useNavigation();
+
+  const isSearching = navigation.formData?.has("q"); // formData es un tipo de la API FormData (https://developer.mozilla.org/en-US/docs/Web/API/FormData)
+
   return (
     <div>
       <Form
         className={classNames(
           "flex border-2 border-gray-300 rounded-md",
-          "focus-within:border-primary md:w-80"
+          "focus-within:border-primary md:w-80",
+          isSearching ? "animate-pulse" : ""
         )}
       >
         <button className="px-2 mr-1">
