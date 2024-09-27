@@ -11,6 +11,19 @@ export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   return (
     <div>
+      <form>
+        <input
+          type="text"
+          name="firstName"
+          className="border-2 border-grey-300"
+        />
+        <input
+          type="text"
+          name="lastName"
+          className="border-2 border-grey-300"
+        />
+        <button>Submit</button>
+      </form>
       <ul
         className={classNames(
           "flex gap-8 overflow-x-auto",
