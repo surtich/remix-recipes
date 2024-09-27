@@ -18,6 +18,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json(shelves);
 };
 
+export const action = async () => {
+  return null;
+};
+
 export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
