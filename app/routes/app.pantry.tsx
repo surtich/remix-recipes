@@ -7,6 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
+import { PrimaryButton } from "~/components/forms";
 import { PlusIcon, SearchIcon } from "~/components/icons";
 import { getAllShelves } from "~/models/pantry-shelf.server";
 
@@ -46,10 +47,10 @@ export default function Pantry() {
         />
       </Form>
       <Form reloadDocument>
-        <button>
+        <PrimaryButton className="mt-4 w-full">
           <PlusIcon />
-          <span>Create Shelf</span>
-        </button>
+          <span className="pl-2">Create Shelf</span>
+        </PrimaryButton>
       </Form>
       <ul
         className={classNames(
