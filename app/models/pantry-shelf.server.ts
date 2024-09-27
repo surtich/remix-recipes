@@ -48,3 +48,14 @@ export async function deleteShelf(shelfId: string) {
     }
   }
 }
+
+export function saveShelfName(shelfId: string, shelfName: string) {
+  return db.pantryShelf.update({
+    where: {
+      id: shelfId,
+    },
+    data: {
+      name: shelfName,
+    },
+  });
+}
