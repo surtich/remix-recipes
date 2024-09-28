@@ -18,7 +18,7 @@ import {
   getAllShelves,
   saveShelfName,
 } from "~/models/pantry-shelf.server";
-import { useServerLayoutEffect } from "~/utils/misc";
+import { useIsHydrated, useServerLayoutEffect } from "~/utils/misc";
 import { validateForm } from "~/utils/validation";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -170,6 +170,7 @@ function Shelf({ shelf }: ShelfProps) {
     shelf.items,
     createShelfItemFetcher.state
   );
+  const isHydrated = useIsHydrated();
   const isDeletingShelf =
     deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
     deleteShelfFetcher.formData?.get("shelfId") === shelf.id;
@@ -215,9 +216,11 @@ function Shelf({ shelf }: ShelfProps) {
             {saveShelfNameFetcher.data?.errors?.shelfName}
           </ErrorMessage>
         </div>
-        <button name="_action" value="saveShelfName" className="ml-4">
-          <SaveIcon />
-        </button>
+        {isHydrated ? null : (
+          <button name="_action" value="saveShelfName" className="ml-4">
+            <SaveIcon />
+          </button>
+        )}
         <input type="hidden" name="shelfId" value={shelf.id} />
         <ErrorMessage className="pb-2">
           {saveShelfNameFetcher.data?.errors?.shelfId}

@@ -1,5 +1,5 @@
 import { useMatches } from "@remix-run/react";
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 
 export function useMatchesData(id: string) {
   const matches = useMatches();
@@ -17,3 +17,16 @@ export function isRunningOnServer() {
 export const useServerLayoutEffect = isRunningOnServer()
   ? useEffect
   : useLayoutEffect;
+
+let hasHydrated = false;
+export function useIsHydrated() {
+  const [isHydrated, setIsHydrated] = useState(hasHydrated);
+
+  useEffect(() => {
+    // Sólo se hidrata una vez
+    hasHydrated = true;
+    setIsHydrated(true);
+  }, []);
+
+  return isHydrated;
+}
