@@ -185,7 +185,7 @@ function Shelf({ shelf }: ShelfProps) {
       )}
     >
       <saveShelfNameFetcher.Form method="post" className="flex">
-        <div className="w-full mb-2">
+        <div className="w-full mb-2 peer">
           <input
             type="text"
             required
@@ -217,7 +217,14 @@ function Shelf({ shelf }: ShelfProps) {
           </ErrorMessage>
         </div>
         {isHydrated ? null : (
-          <button name="_action" value="saveShelfName" className="ml-4">
+          <button
+            name="_action"
+            value="saveShelfName"
+            className={classNames(
+              "ml-4 opacity-0 hover:opacity-100 focus:opacity-100",
+              "peer-focus-within:opacity-100"
+            )}
+          >
             <SaveIcon />
           </button>
         )}
@@ -249,7 +256,7 @@ function Shelf({ shelf }: ShelfProps) {
           createItemFormRef.current?.reset();
         }}
       >
-        <div className="w-full mb-2">
+        <div className="w-full mb-2 peer">
           <input
             type="text"
             required
@@ -268,7 +275,15 @@ function Shelf({ shelf }: ShelfProps) {
             {createShelfItemFetcher.data?.errors?.itemName}
           </ErrorMessage>
         </div>
-        <button name="_action" value="createShelfItem" className="ml-4">
+        <button
+          name="_action"
+          value="createShelfItem"
+          className={classNames(
+            "ml-4",
+            "ml-4 opacity-0 hover:opacity-100 focus:opacity-100",
+            "peer-focus-within:opacity-100"
+          )}
+        >
           <SaveIcon />
         </button>
         <input type="hidden" name="shelfId" value={shelf.id} />
