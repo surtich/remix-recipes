@@ -297,7 +297,15 @@ function Shelf({ shelf }: ShelfProps) {
           <ShelfItem key={item.id} shelfItem={item} />
         ))}
       </ul>
-      <deleteShelfFetcher.Form method="post" className="pt-8">
+      <deleteShelfFetcher.Form
+        method="post"
+        className="pt-8"
+        onSubmit={(event) => {
+          if (!confirm("Are you sure you want to delete this shelf?")) {
+            event.preventDefault();
+          }
+        }}
+      >
         <input type="hidden" name="shelfId" value={shelf.id} />
         <ErrorMessage className="pb-2">
           {deleteShelfFetcher.data?.errors?.shelfId}
