@@ -8,6 +8,14 @@ export function getUser(email: string) {
   });
 }
 
+export function getUserById(id: string) {
+  return db.user.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+
 export function createUser(email: string, firstName: string, lastName: string) {
   return db.user.create({
     data: {
