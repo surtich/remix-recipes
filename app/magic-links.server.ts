@@ -1,3 +1,4 @@
+import { json } from "@remix-run/react";
 import Cryptr from "cryptr";
 
 if (!process.env.MAGIC_LINK_SECRET) {
@@ -29,4 +30,18 @@ export function generateMagicLink(email: string, nonce: string) {
   url.pathname = "/validate-magic-link";
   url.searchParams.set("magic", encryptedPayload);
   return url.toString();
+}
+
+export function getMagicLinkPayload(request: Request): MagicLinkPayload {
+  const url = new URL(request.url);
+  const magic = url.searchParams.get("magic");
+
+  if (!magic) {
+    throw json(
+      { error: "magic search parameter does not exist" },
+      { status: 400 }
+    );
+  }
+  const magicLinkPayload = JSON.parse(cryptr.decrypt(magic));
+  return magicLinkPayload;
 }
