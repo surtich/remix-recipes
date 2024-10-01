@@ -32,6 +32,15 @@ export function generateMagicLink(email: string, nonce: string) {
   return url.toString();
 }
 
+function isMagicLinkPayload(value: any): value is MagicLinkPayload {
+  return (
+    typeof value === "object" &&
+    typeof value.email === "string" &&
+    typeof value.nonce === "string" &&
+    typeof value.createdAt === "string"
+  );
+}
+
 export function getMagicLinkPayload(request: Request): MagicLinkPayload {
   const url = new URL(request.url);
   const magic = url.searchParams.get("magic");
@@ -43,5 +52,12 @@ export function getMagicLinkPayload(request: Request): MagicLinkPayload {
     );
   }
   const magicLinkPayload = JSON.parse(cryptr.decrypt(magic));
+
+  if (!isMagicLinkPayload(magicLinkPayload)) {
+    throw json(
+      { error: "magic search parameter is not a valid magic link" },
+      { status: 400 }
+    );
+  }
   return magicLinkPayload;
 }
