@@ -1,5 +1,7 @@
 import { json } from "@remix-run/react";
 import Cryptr from "cryptr";
+import { renderToStaticMarkup } from "react-dom/server"; // para usar esta función el fichero tiene que ser .tsx
+import { sendEmail } from "./utils/email.server";
 
 if (!process.env.MAGIC_LINK_SECRET) {
   throw new Error("MAGIC_LINK_SECRET is not set");
@@ -58,4 +60,23 @@ export function getMagicLinkPayload(request: Request): MagicLinkPayload {
     throw invalidMagicLink("magic link is invalid");
   }
   return magicLinkPayload;
+}
+
+export function sendMagicLinkEmail(link: string, email: string) {
+  const html = renderToStaticMarkup(
+    <div>
+      <h1>Log in to Remix Recipes</h1>
+      <p>
+        Hey there! Click the link bellow to finish logging in to the Remix
+        Recipes app.
+      </p>
+      <a href={link}>Log In</a>
+    </div>
+  );
+  return sendEmail({
+    from: `Remix Recipes <${process.env.MAILGUN_FROM}>`,
+    to: email,
+    subject: "Log in to Remix Recipes",
+    html,
+  });
 }

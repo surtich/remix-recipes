@@ -3,7 +3,7 @@ import { useActionData } from "@remix-run/react";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { ErrorMessage, PrimaryButton, PrimaryInput } from "~/components/forms";
-import { generateMagicLink } from "~/magic-links.server";
+import { generateMagicLink, sendMagicLinkEmail } from "~/magic-links.server";
 import { commitSession, getSession } from "~/sessions";
 import { validateForm } from "~/utils/validation";
 
@@ -32,7 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
       // se controla manualmente el borrado del nonce para garantizar un sólo uso.
       session.set("nonce", nonce);
       const link = generateMagicLink(email, nonce);
-      console.log("Magic link:", link);
+      await sendMagicLinkEmail(link, email);
       return json("ok", {
         headers: {
           "Set-Cookie": await commitSession(session),
