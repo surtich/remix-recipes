@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ErrorMessage, PrimaryButton } from "~/components/forms";
 import { sessionCookie } from "~/cookies";
 import { getUser } from "~/models/user.server";
+import { getSession } from "~/sessions";
 import { validateForm } from "~/utils/validation";
 
 const loginSchema = z.object({
@@ -13,8 +14,8 @@ const loginSchema = z.object({
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookieHeader = request.headers.get("cookie");
-  const cookieValue = await sessionCookie.parse(cookieHeader);
-  console.log("Cookie value:", cookieValue);
+  const session = await getSession(cookieHeader);
+  console.log("Session data:", session.data);
   return null;
 };
 
