@@ -18,6 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  await requiredLoggedOutUser(request);
   const cookieHeader = request.headers.get("cookie");
   const session = await getSession(cookieHeader);
   const formData = await request.formData();
