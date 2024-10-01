@@ -1,5 +1,6 @@
-import { json, type LoaderFunction } from "@remix-run/node";
+import { json, redirect, type LoaderFunction } from "@remix-run/node";
 import { getMagicLinkPayload, invalidMagicLink } from "~/magic-links.server";
+import { getUser } from "~/models/user.server";
 import { commitSession, getSession } from "~/sessions";
 
 const magicLinkMaxAge = 1000 * 60 * 10; // 10 minutes
@@ -23,7 +24,15 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw invalidMagicLink("invalid nonce");
   }
 
-  return json("ok", {
+  // 3. Validate email
+  const user = await getUser(magicLinkPayload.email);
+
+  if (!user) {
+    throw invalidMagicLink("user not found");
+  }
+
+  session.set("userId", user.id);
+  return redirect("/app", {
     headers: { "Set-Cookie": await commitSession(session) },
   });
 };
