@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { ErrorMessage, PrimaryButton } from "~/components/forms";
 import { generateMagicLink } from "~/magic-links.server";
-import { getSession } from "~/sessions";
+import { commitSession, getSession } from "~/sessions";
 import { validateForm } from "~/utils/validation";
 
 const loginSchema = z.object({
@@ -20,6 +20,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("cookie");
+  const session = await getSession(cookieHeader);
   const formData = await request.formData();
 
   return validateForm(
@@ -27,9 +29,17 @@ export const action: ActionFunction = async ({ request }) => {
     loginSchema,
     async ({ email }) => {
       const nonce = uuid();
+      // session.flash() es igual que session.set() pero solo dura una petición.
+      // se borrará después de hacer session.get()
+      // de esta forma el magic link solo se podrá usar una vez.
+      session.flash("nonce", nonce);
       const link = generateMagicLink(email, nonce);
       console.log("Magic link:", link);
-      return json("ok");
+      return json("ok", {
+        headers: {
+          "Set-Cookie": await commitSession(session),
+        },
+      });
     },
     (errors) => json({ errors, email: formData.get("email") }, { status: 400 })
   );
