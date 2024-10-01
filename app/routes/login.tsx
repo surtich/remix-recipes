@@ -1,9 +1,8 @@
 import { type ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
-import classNames from "classnames";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
-import { ErrorMessage, PrimaryButton } from "~/components/forms";
+import { ErrorMessage, PrimaryButton, PrimaryInput } from "~/components/forms";
 import { generateMagicLink } from "~/magic-links.server";
 import { commitSession, getSession } from "~/sessions";
 import { validateForm } from "~/utils/validation";
@@ -52,16 +51,12 @@ export default function Login() {
       <h1 className="text-3xl mb-8">Remix recipes</h1>
       <form method="post" className="mx-auto md:w-1/3">
         <div className="text-left pb-4">
-          <input
+          <PrimaryInput
             type="email"
             name="email"
             placeholder="Email"
             autoComplete="off"
             defaultValue={actionData?.email}
-            className={classNames(
-              "w-full outline-none border-2 border-grey-200",
-              "focus:border-primary rounded-md p-2"
-            )}
           />
           <ErrorMessage>{actionData?.errors?.email}</ErrorMessage>
         </div>
