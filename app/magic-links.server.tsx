@@ -63,20 +63,24 @@ export function getMagicLinkPayload(request: Request): MagicLinkPayload {
 }
 
 export function sendMagicLinkEmail(link: string, email: string) {
-  const html = renderToStaticMarkup(
-    <div>
-      <h1>Log in to Remix Recipes</h1>
-      <p>
-        Hey there! Click the link bellow to finish logging in to the Remix
-        Recipes app.
-      </p>
-      <a href={link}>Log In</a>
-    </div>
-  );
-  return sendEmail({
-    from: `Remix Recipes <${process.env.MAILGUN_FROM}>`,
-    to: email,
-    subject: "Log in to Remix Recipes",
-    html,
-  });
+  if (process.env.NODE_ENV === "production") {
+    const html = renderToStaticMarkup(
+      <div>
+        <h1>Log in to Remix Recipes</h1>
+        <p>
+          Hey there! Click the link bellow to finish logging in to the Remix
+          Recipes app.
+        </p>
+        <a href={link}>Log In</a>
+      </div>
+    );
+    return sendEmail({
+      from: `Remix Recipes <${process.env.MAILGUN_FROM}>`,
+      to: email,
+      subject: "Log in to Remix Recipes",
+      html,
+    });
+  } else {
+    console.log("Magic link:", link);
+  }
 }
