@@ -5,7 +5,7 @@ import { z } from "zod";
 import { ErrorMessage, PrimaryButton } from "~/components/forms";
 import { sessionCookie } from "~/cookies";
 import { getUser } from "~/models/user.server";
-import { getSession } from "~/sessions";
+import { commitSession, getSession } from "~/sessions";
 import { validateForm } from "~/utils/validation";
 
 const loginSchema = z.object({
@@ -20,6 +20,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("cookie");
+  const session = await getSession(cookieHeader);
   const formData = await request.formData();
 
   return validateForm(
@@ -35,11 +37,13 @@ export const action: ActionFunction = async ({ request }) => {
         );
       }
 
+      session.set("userId", user.id);
+
       return json(
         { user },
         {
           headers: {
-            "Set-Cookie": await sessionCookie.serialize({ userId: user.id }),
+            "Set-Cookie": await commitSession(session),
           },
         }
       );
