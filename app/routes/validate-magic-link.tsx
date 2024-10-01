@@ -39,6 +39,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   if (user) {
     session.set("userId", user.id);
+    session.unset("nonce");
     return redirect("/app", {
       headers: { "Set-Cookie": await commitSession(session) },
     });
@@ -71,6 +72,7 @@ export const action: ActionFunction = async ({ request }) => {
       const cookie = request.headers.get("cookie");
       const session = await getSession(cookie);
       session.set("userId", user.id);
+      session.unset("nonce");
       return redirect("/app", {
         headers: { "Set-Cookie": await commitSession(session) },
       });

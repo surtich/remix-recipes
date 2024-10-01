@@ -28,10 +28,9 @@ export const action: ActionFunction = async ({ request }) => {
     loginSchema,
     async ({ email }) => {
       const nonce = uuid();
-      // session.flash() es igual que session.set() pero solo dura una petición.
-      // se borrará después de hacer session.get()
-      // de esta forma el magic link solo se podrá usar una vez.
-      session.flash("nonce", nonce);
+      // se usa un set normal para evitar que la recarga de la página provoque la eliminación del nonce.
+      // se controla manualmente el borrado del nonce para garantizar un sólo uso.
+      session.set("nonce", nonce);
       const link = generateMagicLink(email, nonce);
       console.log("Magic link:", link);
       return json("ok", {
