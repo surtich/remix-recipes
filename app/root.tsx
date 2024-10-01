@@ -17,6 +17,7 @@ import {
   BookIcon,
   DiscoverIcon,
   HomeIcon,
+  LoginIcon,
   SettingIcon,
 } from "./components/icons";
 import classNames from "classnames";
@@ -78,6 +79,11 @@ export default function App() {
 
           <AppNavLink to="settings">
             <SettingIcon />
+          </AppNavLink>
+        </ul>
+        <ul>
+          <AppNavLink to="/login">
+            <LoginIcon />
           </AppNavLink>
         </ul>
       </nav>
