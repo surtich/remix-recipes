@@ -41,23 +41,21 @@ function isMagicLinkPayload(value: any): value is MagicLinkPayload {
   );
 }
 
+function invalidMagicLink(message: string) {
+  return json({ error: message }, { status: 400 });
+}
+
 export function getMagicLinkPayload(request: Request): MagicLinkPayload {
   const url = new URL(request.url);
   const magic = url.searchParams.get("magic");
 
   if (!magic) {
-    throw json(
-      { error: "magic search parameter does not exist" },
-      { status: 400 }
-    );
+    throw invalidMagicLink("magic search parameter is missing");
   }
   const magicLinkPayload = JSON.parse(cryptr.decrypt(magic));
 
   if (!isMagicLinkPayload(magicLinkPayload)) {
-    throw json(
-      { error: "magic search parameter is not a valid magic link" },
-      { status: 400 }
-    );
+    throw invalidMagicLink("magic link is invalid");
   }
   return magicLinkPayload;
 }
