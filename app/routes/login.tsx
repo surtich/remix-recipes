@@ -3,13 +3,8 @@ import { useActionData } from "@remix-run/react";
 import classNames from "classnames";
 import { z } from "zod";
 import { ErrorMessage, PrimaryButton } from "~/components/forms";
+import { getUser } from "~/models/user.server";
 import { validateForm } from "~/utils/validation";
-
-export function headers() {
-  return {
-    "Set-Cookie": "remix-recipes-cookie=myValue",
-  };
-}
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -21,7 +16,25 @@ export const action: ActionFunction = async ({ request }) => {
   return validateForm(
     formData,
     loginSchema,
-    ({ email }) => {},
+    async ({ email }) => {
+      const user = await getUser(email);
+
+      if (user === null) {
+        return json(
+          { errors: { email: "User not found" }, email },
+          { status: 401 } // 401 Unauthorized
+        );
+      }
+
+      return json(
+        { user },
+        {
+          headers: {
+            "Set-Cookie": `remix-recipes__userId=${user.id}; HttpOnly; Secure`,
+          },
+        }
+      );
+    },
     (errors) => json({ errors, email: formData.get("email") }, { status: 400 })
   );
 };
