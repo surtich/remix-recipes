@@ -7,3 +7,13 @@ export function getUser(email: string) {
     },
   });
 }
+
+export function createUser(email: string, firstName: string, lastName: string) {
+  return db.user.create({
+    data: {
+      email,
+      firstName,
+      lastName,
+    },
+  });
+}
