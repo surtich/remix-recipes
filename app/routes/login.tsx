@@ -1,11 +1,11 @@
 import { type ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import classNames from "classnames";
+import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { ErrorMessage, PrimaryButton } from "~/components/forms";
-import { sessionCookie } from "~/cookies";
-import { getUser } from "~/models/user.server";
-import { commitSession, getSession } from "~/sessions";
+import { generateMagicLink } from "~/magic-links.server";
+import { getSession } from "~/sessions";
 import { validateForm } from "~/utils/validation";
 
 const loginSchema = z.object({
@@ -20,33 +20,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const cookieHeader = request.headers.get("cookie");
-  const session = await getSession(cookieHeader);
   const formData = await request.formData();
 
   return validateForm(
     formData,
     loginSchema,
     async ({ email }) => {
-      const user = await getUser(email);
-
-      if (user === null) {
-        return json(
-          { errors: { email: "User not found" }, email },
-          { status: 401 } // 401 Unauthorized
-        );
-      }
-
-      session.set("userId", user.id);
-
-      return json(
-        { user },
-        {
-          headers: {
-            "Set-Cookie": await commitSession(session),
-          },
-        }
-      );
+      const nonce = uuid();
+      const link = generateMagicLink(email, nonce);
+      console.log("Magic link:", link);
+      return json("ok");
     },
     (errors) => json({ errors, email: formData.get("email") }, { status: 400 })
   );
