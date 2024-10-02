@@ -20,3 +20,11 @@ export function deleteShelfItem(itemId: string) {
     })
   );
 }
+
+export function getShelfItem(id: string) {
+  return db.pantryItem.findUnique({
+    where: {
+      id,
+    },
+  });
+}

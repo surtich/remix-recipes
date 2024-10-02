@@ -14,7 +14,11 @@ import { useRef, useState } from "react";
 import { z } from "zod";
 import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
 import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
-import { createShelfItem, deleteShelfItem } from "~/models/pantry-items.server";
+import {
+  createShelfItem,
+  deleteShelfItem,
+  getShelfItem,
+} from "~/models/pantry-items.server";
 import {
   createShelf,
   deleteShelf,
@@ -119,7 +123,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return validateForm(
         formData,
         deleteShelfItemSchema,
-        (data) => deleteShelfItem(data.itemId),
+        async (data) => {
+          const item = await getShelfItem(data.itemId);
+          if (item !== null && item.userId !== user.id) {
+            throw json(
+              {
+                errors: {
+                  itemId: "You do not have permission to delete this item",
+                },
+              },
+              { status: 401 }
+            );
+          }
+          return deleteShelfItem(data.itemId);
+        },
         (errors) => json({ errors }, { status: 400 })
       );
     }
