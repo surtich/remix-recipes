@@ -21,3 +21,12 @@ export async function requiredLoggedOutUser(request: Request) {
     throw redirect("/app");
   }
 }
+
+export async function requiredLoggedInUser(request: Request) {
+  const user = await getCurrentUser(request);
+  if (user === null) {
+    throw redirect("/login");
+  }
+
+  return user;
+}

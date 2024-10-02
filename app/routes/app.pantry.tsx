@@ -21,10 +21,13 @@ import {
   getAllShelves,
   saveShelfName,
 } from "~/models/pantry-shelf.server";
+import { requiredLoggedInUser } from "~/utils/auth.server";
 import { useIsHydrated, useServerLayoutEffect } from "~/utils/misc";
 import { validateForm } from "~/utils/validation";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  await requiredLoggedInUser(request);
+
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const shelves = await getAllShelves(q);
@@ -50,6 +53,8 @@ const deleteShelfItemSchema = z.object({
 });
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  await requiredLoggedInUser(request);
+
   const formData = await request.formData();
   switch (
     //get recibe la propiedad name y devuelve la propiedad value
