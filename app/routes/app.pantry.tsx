@@ -160,7 +160,7 @@ export default function Pantry() {
 
   return (
     <div>
-      <SearchBar placeholder="Search Shelves..." />
+      <SearchBar placeholder="Search Shelves..." className="md:w-80 " />
       <createShelfFetcher.Form method="post">
         <PrimaryButton
           name="_action"
