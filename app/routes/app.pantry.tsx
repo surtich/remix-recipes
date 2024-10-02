@@ -26,11 +26,11 @@ import { useIsHydrated, useServerLayoutEffect } from "~/utils/misc";
 import { validateForm } from "~/utils/validation";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await requiredLoggedInUser(request);
+  const user = await requiredLoggedInUser(request);
 
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  const shelves = await getAllShelves(q);
+  const shelves = await getAllShelves(user.id, q);
   return json(shelves);
 };
 
