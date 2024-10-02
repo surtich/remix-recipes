@@ -53,7 +53,11 @@ export async function action({ request }: ActionFunctionArgs) {
     },
   });
 
-  return redirect(`/app/recipes/${recipe.id}`);
+  const url = new URL(request.url);
+  // Hacemos esto para cambiar la URL pero preservar los parámetros de búsqueda
+  url.pathname = `/app/recipes/${recipe.id}`;
+
+  return redirect(url.toString());
 }
 
 export default function Recipes() {
