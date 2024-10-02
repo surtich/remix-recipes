@@ -1,5 +1,6 @@
 import {
   isRouteErrorResponse,
+  json,
   Link,
   Links,
   Meta,
@@ -7,11 +8,16 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useNavigation,
   useResolvedPath,
   useRouteError,
 } from "@remix-run/react";
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 
 import "./tailwind.css";
 import {
@@ -22,6 +28,7 @@ import {
   SettingIcon,
 } from "./components/icons";
 import classNames from "classnames";
+import { getCurrentUser } from "./utils/auth.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -43,6 +50,12 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const user = await getCurrentUser(request);
+
+  return json({ isLoggedIn: user !== null });
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -62,6 +75,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const data = useLoaderData<typeof loader>();
   return (
     <>
       <nav
@@ -79,9 +93,11 @@ export default function App() {
             <DiscoverIcon />
           </AppNavLink>
 
-          <AppNavLink to="app/pantry">
-            <BookIcon />
-          </AppNavLink>
+          {data.isLoggedIn ? (
+            <AppNavLink to="app/pantry">
+              <BookIcon />
+            </AppNavLink>
+          ) : null}
 
           <AppNavLink to="settings">
             <SettingIcon />
