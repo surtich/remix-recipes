@@ -1,4 +1,5 @@
 import {
+  isRouteErrorResponse,
   Link,
   Links,
   Meta,
@@ -145,13 +146,30 @@ export function ErrorBoundary() {
       </head>
       <body>
         <div className="p-4">
-          <h1 className="text-2xl pb-3">Woops!</h1>
-          <p>
-            You&apos;re seeing this page because an unexpected error ocurred.
-          </p>
-          {error instanceof Error ? (
-            <p className="my-4 font-bold">{error.message}</p>
-          ) : null}
+          {
+            // //check if the given error is an ErrorResponse generated from a 4xx/5xx Response thrown from an action/loader
+            isRouteErrorResponse(error) ? (
+              <>
+                <h1 className="text-2xl pb-3">
+                  {error.status} - {error.statusText}
+                </h1>
+                <p>You&apos;re seeing this page because an error ocurred.</p>
+                <p className="my-4 font-bold">{error.data.message}</p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-2xl pb-3">Woops!</h1>
+                <p>
+                  You&apos;re seeing this page because an unexpected error
+                  ocurred.
+                </p>
+                {error instanceof Error ? (
+                  <p className="my-4 font-bold">{error.message}</p>
+                ) : null}
+              </>
+            )
+          }
+
           <Link to="/" className="text-primary">
             Go back to the home page
           </Link>
