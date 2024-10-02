@@ -19,6 +19,7 @@ import {
   createShelf,
   deleteShelf,
   getAllShelves,
+  getShelf,
   saveShelfName,
 } from "~/models/pantry-shelf.server";
 import { requiredLoggedInUser } from "~/utils/auth.server";
@@ -67,7 +68,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return validateForm(
         formData,
         deleteShelfSchema,
-        (data) => deleteShelf(data.shelfId),
+        async (data) => {
+          const shelf = await getShelf(data.shelfId);
+          if (shelf !== null && shelf.userId !== user.id) {
+            throw json(
+              {
+                errors: {
+                  shelfId: "You do not have permission to delete this shelf",
+                },
+              },
+              { status: 401 }
+            );
+          }
+          return deleteShelf(data.shelfId);
+        },
         (errors) => json({ errors }, { status: 400 })
       );
     }
@@ -75,7 +89,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return validateForm(
         formData,
         saveShelfNameSchema,
-        (data) => saveShelfName(data.shelfId, data.shelfName),
+        async (data) => {
+          const shelf = await getShelf(data.shelfId);
+          if (shelf !== null && shelf.userId !== user.id) {
+            throw json(
+              {
+                errors: {
+                  shelfId:
+                    "You do not have permission to change the shelf's name",
+                },
+              },
+              { status: 401 }
+            );
+          }
+          return saveShelfName(data.shelfId, data.shelfName);
+        },
         (errors) => json({ errors }, { status: 400 })
       );
     }

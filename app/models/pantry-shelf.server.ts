@@ -52,3 +52,11 @@ export function saveShelfName(shelfId: string, shelfName: string) {
     },
   });
 }
+
+export function getShelf(id: string) {
+  return db.pantryShelf.findUnique({
+    where: {
+      id,
+    },
+  });
+}
