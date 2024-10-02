@@ -4,7 +4,13 @@ import {
   type LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { Form, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  NavLink,
+  Outlet,
+  useLoaderData,
+  useLocation,
+} from "@remix-run/react";
 import { PrimaryButton, SearchBar } from "~/components/forms";
 import { PlusIcon } from "~/components/icons";
 import {
@@ -52,6 +58,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Recipes() {
   const data = useLoaderData<typeof loader>();
+  const location = useLocation(); // es lo mismo que la URL actual. Ver: https://developer.mozilla.org/en-US/docs/Web/API/Location
 
   return (
     <RecipePageWrapper>
@@ -68,7 +75,14 @@ export default function Recipes() {
         <ul>
           {data?.recipes.map((recipe) => (
             <li className="my-4" key={recipe.id}>
-              <NavLink reloadDocument to={recipe.id}>
+              <NavLink
+                reloadDocument
+                to={{
+                  pathname: recipe.id,
+                  search:
+                    location.search /*A string containing a '?' followed by the parameters or "query string" of the URL*/,
+                }}
+              >
                 {({ isActive }) => (
                   <RecipeCard
                     name={recipe.name}
