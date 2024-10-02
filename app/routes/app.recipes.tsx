@@ -29,6 +29,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       name: { contains: q ?? "", mode: "insensitive" },
     },
     select: { name: true, totalTime: true, imageUrl: true, id: true },
+    orderBy: { createdAt: "desc" },
   });
 
   return json({ recipes });
