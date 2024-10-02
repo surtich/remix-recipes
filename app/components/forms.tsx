@@ -1,9 +1,11 @@
+import { Form, useNavigation, useSearchParams } from "@remix-run/react";
 import classNames from "classnames";
 import type {
   ButtonHTMLAttributes,
   HTMLAttributes,
   InputHTMLAttributes,
 } from "react";
+import { SearchIcon } from "./icons";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
@@ -70,5 +72,37 @@ export function PrimaryInput({ className, ...props }: PrimaryInputProps) {
         className
       )}
     />
+  );
+}
+
+type SearchBarProps = {
+  placeholder?: string;
+};
+
+export function SearchBar({ placeholder = "Search..." }: SearchBarProps) {
+  const [searchParams] = useSearchParams();
+  const navigation = useNavigation();
+  const isSearching = navigation.formData?.has("q"); // formData es un tipo de la API FormData (https://developer.mozilla.org/en-US/docs/Web/API/FormData)
+
+  return (
+    <Form
+      className={classNames(
+        "flex border-2 border-gray-300 rounded-md",
+        "focus-within:border-primary md:w-80",
+        isSearching ? "animate-pulse" : ""
+      )}
+    >
+      <button className="px-2 mr-1">
+        <SearchIcon />
+      </button>
+      <input
+        type="text"
+        name="q"
+        defaultValue={searchParams.get("q") ?? ""}
+        autoComplete="off"
+        placeholder={placeholder}
+        className="w-full py-3 px-2 outline-none"
+      />
+    </Form>
   );
 }

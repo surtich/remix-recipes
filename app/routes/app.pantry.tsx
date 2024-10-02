@@ -3,19 +3,22 @@ import {
   type LoaderFunctionArgs,
 } from "@remix-run/node";
 import {
-  Form,
   isRouteErrorResponse,
   json,
   useFetcher,
   useLoaderData,
   useRouteError,
-  useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
 import { useRef, useState } from "react";
 import { z } from "zod";
-import { DeleteButton, ErrorMessage, PrimaryButton } from "~/components/forms";
-import { PlusIcon, SaveIcon, SearchIcon, TrashIcon } from "~/components/icons";
+import {
+  DeleteButton,
+  ErrorMessage,
+  PrimaryButton,
+  SearchBar,
+} from "~/components/forms";
+import { PlusIcon, SaveIcon, TrashIcon } from "~/components/icons";
 import {
   createShelfItem,
   deleteShelfItem,
@@ -150,34 +153,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Pantry() {
   const data = useLoaderData<typeof loader>();
-  const [searchParams] = useSearchParams();
   const createShelfFetcher = useFetcher();
 
-  const isSearching = createShelfFetcher.formData?.has("q"); // formData es un tipo de la API FormData (https://developer.mozilla.org/en-US/docs/Web/API/FormData)
   const isCreatingShelf =
     createShelfFetcher.formData?.get("_action") === "createShelf";
 
   return (
     <div>
-      <Form
-        className={classNames(
-          "flex border-2 border-gray-300 rounded-md",
-          "focus-within:border-primary md:w-80",
-          isSearching ? "animate-pulse" : ""
-        )}
-      >
-        <button className="px-2 mr-1">
-          <SearchIcon />
-        </button>
-        <input
-          type="text"
-          name="q"
-          defaultValue={searchParams.get("q") ?? ""}
-          autoComplete="off"
-          placeholder="Search Shelves..."
-          className="w-full py-3 px-2 outline-none"
-        />
-      </Form>
+      <SearchBar placeholder="Search Shelves..." />
       <createShelfFetcher.Form method="post">
         <PrimaryButton
           name="_action"
