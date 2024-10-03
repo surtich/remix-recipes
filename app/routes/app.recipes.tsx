@@ -84,6 +84,7 @@ export default function Recipes() {
             return (
               <li className="my-4" key={recipe.id}>
                 <NavLink
+                  prefetch="intent" // precarga el componente cuando el usuario pasa el mouse por encima o cuando el enlace tiene el foco.
                   to={{
                     pathname: recipe.id,
                     search:
