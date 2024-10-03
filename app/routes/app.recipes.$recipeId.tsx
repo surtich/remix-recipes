@@ -1,7 +1,13 @@
 import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
+import classNames from "classnames";
 import React from "react";
-import { ErrorMessage, Input } from "~/components/forms";
+import {
+  DeleteButton,
+  ErrorMessage,
+  Input,
+  PrimaryButton,
+} from "~/components/forms";
 import { TimeIcon, TrashIcon } from "~/components/icons";
 import db from "~/db.server";
 
@@ -80,6 +86,29 @@ export default function RecipeDetail() {
             </button>
           </React.Fragment>
         ))}
+      </div>
+      <label
+        htmlFor="instructions"
+        className="block font-bold text-sm pb-2 w-fit"
+      >
+        Instructions
+      </label>
+      <textarea
+        key={data.recipe?.id}
+        id="instructions"
+        name="instructions"
+        placeholder="Instructions go here"
+        className={classNames(
+          "w-full h-56 rounded-md outline-none",
+          "focus:border-2 focus:p-3 focus:border-primary duration-300"
+        )}
+        defaultValue={data.recipe?.instructions}
+      />
+      <ErrorMessage></ErrorMessage>
+      <hr className="my-4" />
+      <div className="flex justify-between">
+        <DeleteButton>Delete this Recipe</DeleteButton>
+        <PrimaryButton>Save</PrimaryButton>
       </div>
     </Form>
   );
