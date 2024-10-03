@@ -7,7 +7,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     where: { id: params.recipeId },
   });
 
-  return json({ recipe });
+  return json({ recipe }, { headers: { "Cache-Control": "max-age=10" } }); // 10 seconds
 }
 
 export default function RecipeDetail() {
