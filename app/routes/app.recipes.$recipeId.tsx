@@ -1,12 +1,18 @@
 import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
+import React from "react";
 import { ErrorMessage, Input } from "~/components/forms";
-import { TimeIcon } from "~/components/icons";
+import { TimeIcon, TrashIcon } from "~/components/icons";
 import db from "~/db.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const recipe = await db.recipe.findUnique({
     where: { id: params.recipeId },
+    include: {
+      ingredients: {
+        select: { id: true, name: true, amount: true },
+      },
+    },
   });
 
   return json({ recipe }, { headers: { "Cache-Control": "max-age=10" } }); // 10 seconds
@@ -41,6 +47,39 @@ export default function RecipeDetail() {
           />
           <ErrorMessage></ErrorMessage>
         </div>
+      </div>
+      <div className="grid grid-cols-[30%_auto_min-content] my-4 gap-2">
+        <h2 className="font-bold text-sm pb-1">Amount</h2>
+        <h2 className="font-bold text-sm pb-1">Name</h2>
+        <div></div>
+        {data.recipe?.ingredients.map((ingredient) => (
+          <React.Fragment key={ingredient.id}>
+            {/* React.Fragment permite introducir una key */}
+            <div>
+              <Input
+                type="text"
+                placeholder="Amount"
+                autoComplete="off"
+                name="ingredientAmount"
+                defaultValue={ingredient.amount ?? ""}
+              />
+              <ErrorMessage></ErrorMessage>
+            </div>
+            <div>
+              <Input
+                type="text"
+                placeholder="Name"
+                autoComplete="off"
+                name="ingredientName"
+                defaultValue={ingredient.name ?? ""}
+              />
+              <ErrorMessage></ErrorMessage>
+            </div>
+            <button>
+              <TrashIcon />
+            </button>
+          </React.Fragment>
+        ))}
       </div>
     </Form>
   );
