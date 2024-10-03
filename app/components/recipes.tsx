@@ -61,7 +61,10 @@ export function RecipeCard({
         <img src={imageUrl} className="object-cover h-full w-full" alt="" />
       </div>
       <div className="p-4 flex-grow">
-        <h3 className="font-semibold mb-1 text-left">{name}</h3>
+        <h3 className="font-semibold mb-1 text-left">
+          {name}
+          {isLoading ? "..." : ""}
+        </h3>
         <div
           className={classNames(
             "flex font-light",
