@@ -1,7 +1,8 @@
-import { json, LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, json, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import classNames from "classnames";
 import React from "react";
+import { z } from "zod";
 import {
   DeleteButton,
   ErrorMessage,
@@ -10,6 +11,7 @@ import {
 } from "~/components/forms";
 import { TimeIcon, TrashIcon } from "~/components/icons";
 import db from "~/db.server";
+import { validateForm } from "~/utils/validation";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const recipe = await db.recipe.findUnique({
@@ -22,6 +24,31 @@ export async function loader({ params }: LoaderFunctionArgs) {
   });
 
   return json({ recipe }, { headers: { "Cache-Control": "max-age=10" } }); // 10 seconds
+}
+
+const saveRecipeSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  totalTime: z.string().min(1, "Total time is required"),
+  instructions: z.string().min(1, "Instructions is required"),
+});
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const recipeId = params.recipeId;
+
+  switch (formData.get("_action")) {
+    case "saveRecipe": {
+      return validateForm(
+        formData,
+        saveRecipeSchema,
+        async (data) => db.recipe.update({ where: { id: recipeId }, data }),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    default: {
+      return null;
+    }
+  }
 }
 
 export default function RecipeDetail() {
@@ -108,7 +135,7 @@ export default function RecipeDetail() {
       <hr className="my-4" />
       <div className="flex justify-between">
         <DeleteButton>Delete this Recipe</DeleteButton>
-        <PrimaryButton>
+        <PrimaryButton name="_action" value="saveRecipe">
           <div className="flex flex-col justify-center h-full">Save</div>
         </PrimaryButton>
       </div>
