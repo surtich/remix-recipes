@@ -111,3 +111,21 @@ export function SearchBar({
     </Form>
   );
 }
+
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  error?: boolean;
+}
+
+export function Input({ error, className, ...props }: InputProps) {
+  return (
+    <input
+      className={classNames(
+        "w-full outline-none",
+        "border-b-2 border-b-background focus:border-b-primary",
+        error ? "border-b-red-600" : "",
+        className
+      )}
+      {...props}
+    />
+  );
+}
