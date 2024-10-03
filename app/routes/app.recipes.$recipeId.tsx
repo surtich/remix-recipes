@@ -26,11 +26,24 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return json({ recipe }, { headers: { "Cache-Control": "max-age=10" } }); // 10 seconds
 }
 
-const saveRecipeSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  totalTime: z.string().min(1, "Total time is required"),
-  instructions: z.string().min(1, "Instructions is required"),
-});
+const saveRecipeSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    totalTime: z.string().min(1, "Total time is required"),
+    instructions: z.string().min(1, "Instructions is required"),
+    ingredientIds: z
+      .array(z.string().min(1, "Ingredient ID is required"))
+      .optional(),
+    ingredientAmounts: z.array(z.string().nullable()).optional(),
+    ingredientNames: z.array(z.string().min(1, "Name is required")).optional(),
+  })
+  .refine(
+    (data) =>
+      data.ingredientIds?.length === data.ingredientAmounts?.length &&
+      data.ingredientIds?.length === data.ingredientNames?.length,
+
+    { message: "Ingredient amounts and names must match" }
+  );
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -41,7 +54,28 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return validateForm(
         formData,
         saveRecipeSchema,
-        async (data) => db.recipe.update({ where: { id: recipeId }, data }),
+        async ({
+          // Está garantizado por FormData que el orden de los arrays es el mismo
+          ingredientIds = [],
+          ingredientAmounts = [],
+          ingredientNames = [],
+          ...data
+        }) =>
+          db.recipe.update({
+            where: { id: recipeId },
+            data: {
+              ...data,
+              ingredients: {
+                updateMany: ingredientIds.map((id, index) => ({
+                  where: { id },
+                  data: {
+                    amount: ingredientAmounts[index] as string,
+                    name: ingredientNames[index] as string,
+                  },
+                })),
+              },
+            },
+          }),
         (errors) => json({ errors }, { status: 400 })
       );
     }
@@ -88,14 +122,16 @@ export default function RecipeDetail() {
         {data.recipe?.ingredients.map((ingredient) => (
           <React.Fragment key={ingredient.id}>
             {/* React.Fragment permite introducir una key */}
+            <input type="hidden" name="ingredientIds[]" value={ingredient.id} />
             <div>
               <Input
                 type="text"
                 placeholder="Amount"
                 autoComplete="off"
-                name="ingredientAmount"
                 defaultValue={ingredient.amount ?? ""}
+                name="ingredientAmounts[]"
               />
+              {/* Se añade [] al name para indicar qe es un array */}
               <ErrorMessage></ErrorMessage>
             </div>
             <div>
@@ -103,9 +139,10 @@ export default function RecipeDetail() {
                 type="text"
                 placeholder="Name"
                 autoComplete="off"
-                name="ingredientName"
+                name="ingredientNames[]"
                 defaultValue={ingredient.name ?? ""}
               />
+              {/* Se añade [] al name para indicar qe es un array */}
               <ErrorMessage></ErrorMessage>
             </div>
             <button>
