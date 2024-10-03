@@ -18,6 +18,7 @@ export default function RecipeDetail() {
     <Form method="post" reloadDocument>
       <div className="mb-2">
         <Input
+          key={data.recipe?.id}
           type="text"
           placeholder="Recipe Name"
           autoComplete="off"
@@ -31,6 +32,7 @@ export default function RecipeDetail() {
         <TimeIcon />
         <div className="ml-2 flex-grow">
           <Input
+            key={data.recipe?.id}
             type="text"
             placeholder="Time"
             autoComplete="off"
