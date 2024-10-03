@@ -108,7 +108,9 @@ export default function RecipeDetail() {
       <hr className="my-4" />
       <div className="flex justify-between">
         <DeleteButton>Delete this Recipe</DeleteButton>
-        <PrimaryButton>Save</PrimaryButton>
+        <PrimaryButton>
+          <div className="flex flex-col justify-center h-full">Save</div>
+        </PrimaryButton>
       </div>
     </Form>
   );
