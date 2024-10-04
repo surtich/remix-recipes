@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, type ZodTypeDef } from "zod";
 
 type FieldErrors = {
   [key: string]: string;
@@ -38,25 +38,21 @@ function objectify(formData: FormData) {
   return formFields;
 }
 
-export function validateForm<T>(
+export function validateForm<Input, Output, R, E>(
   formData: FormData,
-  zodSchema: z.Schema<T>,
-  successFn: (data: T) => unknown,
-  errorsFn: (errors: FieldErrors) => unknown
+  zodSchema: z.Schema<Output, ZodTypeDef, Input>,
+  successFn: (data: Output) => R,
+  errorFn: (errors: FieldErrors) => E
 ) {
   const fields = objectify(formData);
-
-  console.log("fields", fields);
   const result = zodSchema.safeParse(fields);
   if (!result.success) {
     const errors: FieldErrors = {};
-    // consultar la documentación de la gestión de errores con zod (https://zod.dev/ERROR_HANDLING)
     result.error.issues.forEach((issue) => {
       const path = issue.path.join(".");
-
       errors[path] = issue.message;
     });
-    return errorsFn(errors);
+    return errorFn(errors);
   }
   return successFn(result.data);
 }
