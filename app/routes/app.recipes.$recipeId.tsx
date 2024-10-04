@@ -4,7 +4,13 @@ import {
   LoaderFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  isRouteErrorResponse,
+  useActionData,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
 import classNames from "classnames";
 import React from "react";
 import { z } from "zod";
@@ -17,9 +23,11 @@ import {
 import { SaveIcon, TimeIcon, TrashIcon } from "~/components/icons";
 import db from "~/db.server";
 import { handleDelete } from "~/models/utils";
+import { requiredLoggedInUser } from "~/utils/auth.server";
 import { validateForm } from "~/utils/validation";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const user = await requiredLoggedInUser(request);
   const recipe = await db.recipe.findUnique({
     where: { id: params.recipeId },
     include: {
@@ -29,6 +37,17 @@ export async function loader({ params }: LoaderFunctionArgs) {
       },
     },
   });
+
+  if (recipe === null) {
+    return json({ message: "Recipe not found" }, { status: 404 });
+  }
+
+  if (recipe.userId !== user.id) {
+    throw json(
+      { message: "You're not authorized to view this recipe" },
+      { status: 401 }
+    );
+  }
 
   return json({ recipe }, { headers: { "Cache-Control": "max-age=10" } }); // 10 seconds
 }
@@ -128,17 +147,21 @@ export default function RecipeDetail() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<any>();
 
+  if (!("recipe" in data)) {
+    return json({ message: "Recipe not found" }, { status: 404 });
+  }
+
   return (
     <Form method="post" reloadDocument>
       <div className="mb-2">
         <Input
-          key={data.recipe?.id}
+          key={data.recipe.id}
           type="text"
           placeholder="Recipe Name"
           autoComplete="off"
           className="text-2xl font-extrabold"
           name="name"
-          defaultValue={data.recipe?.name}
+          defaultValue={data.recipe.name}
           error={!!actionData?.errors?.name}
         />
         <ErrorMessage>{actionData?.errors?.name}</ErrorMessage>
@@ -147,12 +170,12 @@ export default function RecipeDetail() {
         <TimeIcon />
         <div className="ml-2 flex-grow">
           <Input
-            key={data.recipe?.id}
+            key={data.recipe.id}
             type="text"
             placeholder="Time"
             autoComplete="off"
             name="totalTime"
-            defaultValue={data.recipe?.totalTime}
+            defaultValue={data.recipe.totalTime}
             error={!!actionData?.errors?.totalTime}
           />
           <ErrorMessage>{actionData?.errors?.totalTime}</ErrorMessage>
@@ -162,7 +185,7 @@ export default function RecipeDetail() {
         <h2 className="font-bold text-sm pb-1">Amount</h2>
         <h2 className="font-bold text-sm pb-1">Name</h2>
         <div></div>
-        {data.recipe?.ingredients.map((ingredient, idx) => (
+        {data.recipe.ingredients.map((ingredient, idx) => (
           <React.Fragment key={ingredient.id}>
             {/* React.Fragment permite introducir una key */}
             <input type="hidden" name="ingredientIds[]" value={ingredient.id} />
@@ -230,7 +253,7 @@ export default function RecipeDetail() {
         Instructions
       </label>
       <textarea
-        key={data.recipe?.id}
+        key={data.recipe.id}
         id="instructions"
         name="instructions"
         placeholder="Instructions go here"
@@ -239,7 +262,7 @@ export default function RecipeDetail() {
           "focus:border-2 focus:p-3 focus:border-primary duration-300",
           actionData?.errors?.instructions ? "border-red-500 p-3" : ""
         )}
-        defaultValue={data.recipe?.instructions}
+        defaultValue={data.recipe.instructions}
       />
       <ErrorMessage>{actionData?.errors?.instructions}</ErrorMessage>
       <hr className="my-4" />
@@ -252,5 +275,26 @@ export default function RecipeDetail() {
         </PrimaryButton>
       </div>
     </Form>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div className="bg-red-600 text-white rounded-md p-4">
+        <h1 className="mb-2">
+          {error.status} - {error.statusText}
+        </h1>
+        <p>{error.data.message}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-red-600 text-white rounded-md p-4">
+      <h1 className="mb-2">An unexpected error ocurred.</h1>
+    </div>
   );
 }
