@@ -39,7 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   if (recipe === null) {
-    return json({ message: "Recipe not found" }, { status: 404 });
+    throw json({ message: "Recipe not found" }, { status: 404 });
   }
 
   if (recipe.userId !== user.id) {
@@ -77,8 +77,25 @@ const createIngredientSchema = z.object({
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const formData = await request.formData();
+  const user = await requiredLoggedInUser(request);
   const recipeId = String(params.recipeId);
+
+  const recipe = await db.recipe.findUnique({
+    where: { id: recipeId },
+  });
+
+  if (recipe === null) {
+    throw json({ message: "Recipe not found" }, { status: 404 });
+  }
+
+  if (recipe.userId !== user.id) {
+    throw json(
+      { message: "You're not authorized to make changes on this recipe" },
+      { status: 401 }
+    );
+  }
+
+  const formData = await request.formData();
   const _action = formData.get("_action");
 
   if (typeof _action === "string" && _action.startsWith("deleteIngredient.")) {
@@ -146,10 +163,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function RecipeDetail() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<any>();
-
-  if (!("recipe" in data)) {
-    return json({ message: "Recipe not found" }, { status: 404 });
-  }
 
   return (
     <Form method="post" reloadDocument>
