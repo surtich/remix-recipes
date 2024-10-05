@@ -403,7 +403,6 @@ function useOptimisticItems(
 
   useServerLayoutEffect(() => {
     // este estado se alcanza cuando el fetcher ha finalizado la revalidación
-    console.log(">>>", createShelfItemState);
     if (createShelfItemState === "idle") {
       setOptimisticItems([]);
     }

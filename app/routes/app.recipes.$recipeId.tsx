@@ -25,7 +25,7 @@ import { SaveIcon, TimeIcon, TrashIcon } from "~/components/icons";
 import db from "~/db.server";
 import { handleDelete } from "~/models/utils";
 import { requiredLoggedInUser } from "~/utils/auth.server";
-import { useDebouncedFunction } from "~/utils/misc";
+import { useDebouncedFunction, useServerLayoutEffect } from "~/utils/misc";
 import { validateForm } from "~/utils/validation";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -237,6 +237,11 @@ export default function RecipeDetail() {
   const saveInstructionsFetcher = useFetcher<any>();
   const createIngredientFetcher = useFetcher<any>();
 
+  const { renderedIngredients, addIngredient } = useOptimisticIngredients(
+    data.recipe.ingredients,
+    createIngredientFetcher.state
+  );
+
   // Creamos este estado para la actualización optimista de la creación de ingredientes.
   // El botón añadir ingrediente necesita acceder a los dos inputs, por lo que lo convertimos en un formulario controlado.
   const [createIngredientForm, setCreateIngredientForm] = React.useState({
@@ -275,6 +280,8 @@ export default function RecipeDetail() {
   );
 
   const createIngredient = () => {
+    addIngredient(createIngredientForm.amount, createIngredientForm.name);
+
     // no hace falta pasar parámetros porque ya están en el estado
     createIngredientFetcher.submit(
       {
@@ -336,7 +343,7 @@ export default function RecipeDetail() {
         <h2 className="font-bold text-sm pb-1">Amount</h2>
         <h2 className="font-bold text-sm pb-1">Name</h2>
         <div></div>
-        {data.recipe.ingredients.map((ingredient, idx) => (
+        {renderedIngredients.map((ingredient, idx) => (
           <IngredientRow
             key={ingredient.id}
             id={ingredient.id}
@@ -529,6 +536,43 @@ function IngredientRow({
       </button>
     </React.Fragment>
   );
+}
+
+type RenderedIngredient = {
+  id: string;
+  name: string;
+  amount: string | null;
+  isOptimistic?: boolean;
+};
+
+function useOptimisticIngredients(
+  savedIngredients: Array<RenderedIngredient>,
+  createShelfIngredientState: "idle" | "submitting" | "loading"
+) {
+  const [optimisticIngredients, setOptimisticIngredients] = React.useState<
+    Array<RenderedIngredient>
+  >([]);
+
+  const renderedIngredients = [...savedIngredients, ...optimisticIngredients]; // Se cambia el orden respecto a lo que se hizo en recipe porque los ingredientes añadidos están al final de la lista.
+
+  useServerLayoutEffect(() => {
+    // este estado se alcanza cuando el fetcher ha finalizado la revalidación
+    if (createShelfIngredientState === "idle") {
+      setOptimisticIngredients([]);
+    }
+  }, [createShelfIngredientState]);
+
+  const addIngredient = (amount: string | null, name: string) => {
+    setOptimisticIngredients((ingredients) => [
+      ...ingredients,
+      { id: createIngredientId(), name, amount, isOptimistic: true },
+    ]);
+  };
+  return { renderedIngredients, addIngredient };
+}
+
+function createIngredientId() {
+  return `${Math.round(Math.random() * 1_000_000)}`;
 }
 
 export function ErrorBoundary() {
