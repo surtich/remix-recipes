@@ -495,6 +495,7 @@ function IngredientRow({
 }: IngredientRowProps) {
   const saveAmountFetcher = useFetcher<any>();
   const saveNameFetcher = useFetcher<any>();
+  const deleteIngredientFetcher = useFetcher<any>();
 
   const saveAmount = useDebouncedFunction((amount: string) =>
     saveAmountFetcher.submit(
@@ -518,7 +519,7 @@ function IngredientRow({
     )
   );
 
-  return (
+  return deleteIngredientFetcher.state !== "idle" ? null : (
     <React.Fragment>
       {/* React.Fragment permite introducir una key */}
       <input type="hidden" name="ingredientIds[]" value={id} />
@@ -552,7 +553,17 @@ function IngredientRow({
           {saveNameFetcher?.data?.errors?.name ?? nameError}
         </ErrorMessage>
       </div>
-      <button name="_action" value={`deleteIngredient.${id}`}>
+      <button
+        name="_action"
+        value={`deleteIngredient.${id}`}
+        onClick={(e) => {
+          e.preventDefault();
+          deleteIngredientFetcher.submit(
+            { _action: `deleteIngredient.${id}` },
+            { method: "post" }
+          );
+        }}
+      >
         <TrashIcon />
       </button>
     </React.Fragment>
