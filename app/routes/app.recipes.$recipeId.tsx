@@ -246,41 +246,14 @@ export default function RecipeDetail() {
         <h2 className="font-bold text-sm pb-1">Name</h2>
         <div></div>
         {data.recipe.ingredients.map((ingredient, idx) => (
-          <React.Fragment key={ingredient.id}>
-            {/* React.Fragment permite introducir una key */}
-            <input type="hidden" name="ingredientIds[]" value={ingredient.id} />
-            <div>
-              <Input
-                type="text"
-                placeholder="Amount"
-                autoComplete="off"
-                defaultValue={ingredient.amount ?? ""}
-                name="ingredientAmounts[]"
-                error={!!actionData?.errors?.[`ingredientAmounts.${idx}`]}
-              />
-              {/* Se añade [] al name para indicar que es un array */}
-              <ErrorMessage>
-                {actionData?.errors?.[`ingredientAmounts.${idx}`]}
-              </ErrorMessage>
-            </div>
-            <div>
-              <Input
-                type="text"
-                placeholder="Name"
-                autoComplete="off"
-                name="ingredientNames[]"
-                defaultValue={ingredient.name ?? ""}
-                error={!!actionData?.errors?.[`ingredientNames.${idx}`]}
-              />
-              {/* Se añade [] al name para indicar que es un array */}
-              <ErrorMessage>
-                {!!actionData?.errors?.[`ingredientNames.${idx}`]}
-              </ErrorMessage>
-            </div>
-            <button name="_action" value={`deleteIngredient.${ingredient.id}`}>
-              <TrashIcon />
-            </button>
-          </React.Fragment>
+          <IngredientRow
+            key={ingredient.id}
+            id={ingredient.id}
+            amount={ingredient.amount}
+            name={ingredient.name}
+            amountError={actionData?.errors?.[`ingredientAmounts.${idx}`]}
+            nameError={actionData?.errors?.[`ingredientNames.${idx}`]}
+          />
         ))}
         <div>
           <Input
@@ -344,6 +317,60 @@ export default function RecipeDetail() {
         </PrimaryButton>
       </div>
     </Form>
+  );
+}
+
+// Hemos tenido que extraer el ingrediente a un componente para usarlo con un fetcher.
+// Los fecherts son hooks y, según las reglas de hooks, no se pueden usar en un bucle.
+// Ver: https://es.reactjs.org/docs/hooks-rules.html
+
+type IngredientRowProps = {
+  id: string;
+  amount: string | null;
+  amountError?: string;
+  name: string;
+  nameError?: string;
+};
+
+function IngredientRow({
+  id,
+  amount,
+  amountError,
+  name,
+  nameError,
+}: IngredientRowProps) {
+  return (
+    <React.Fragment>
+      {/* React.Fragment permite introducir una key */}
+      <input type="hidden" name="ingredientIds[]" value={id} />
+      <div>
+        <Input
+          type="text"
+          placeholder="Amount"
+          autoComplete="off"
+          defaultValue={amount ?? ""}
+          name="ingredientAmounts[]"
+          error={!!amountError}
+        />
+        {/* Se añade [] al name para indicar que es un array */}
+        <ErrorMessage>{amountError}</ErrorMessage>
+      </div>
+      <div>
+        <Input
+          type="text"
+          placeholder="Name"
+          autoComplete="off"
+          name="ingredientNames[]"
+          defaultValue={name ?? ""}
+          error={!!nameError}
+        />
+        {/* Se añade [] al name para indicar que es un array */}
+        <ErrorMessage>{nameError}</ErrorMessage>
+      </div>
+      <button name="_action" value={`deleteIngredient.${id}`}>
+        <TrashIcon />
+      </button>
+    </React.Fragment>
   );
 }
 
