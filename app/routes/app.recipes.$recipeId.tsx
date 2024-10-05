@@ -235,6 +235,14 @@ export default function RecipeDetail() {
   const saveNameFetcher = useFetcher<any>();
   const saveTotalTimeFetcher = useFetcher<any>();
   const saveInstructionsFetcher = useFetcher<any>();
+  const createIngredientFetcher = useFetcher<any>();
+
+  // Creamos este estado para la actualización optimista de la creación de ingredientes.
+  // El botón añadir ingrediente necesita acceder a los dos inputs, por lo que lo convertimos en un formulario controlado.
+  const [createIngredientForm, setCreateIngredientForm] = React.useState({
+    amount: "",
+    name: "",
+  });
 
   const saveName = useDebouncedFunction((name: string) =>
     saveNameFetcher.submit(
@@ -265,6 +273,19 @@ export default function RecipeDetail() {
       { method: "post" }
     )
   );
+
+  const createIngredient = () => {
+    // no hace falta pasar parámetros porque ya están en el estado
+    createIngredientFetcher.submit(
+      {
+        _action: "createIngredient",
+        newIngredientAmount: createIngredientForm.amount, // el nombre, newIngredientAmount, debe coincidir con el que se da en la acción createIngredient
+        newIngredientName: createIngredientForm.name,
+      },
+      { method: "post" }
+    );
+    setCreateIngredientForm({ amount: "", name: "" });
+  };
 
   return (
     <Form method="post" reloadDocument>
@@ -332,6 +353,13 @@ export default function RecipeDetail() {
             name="newIngredientAmount"
             className="border-b-gray-200"
             error={!!actionData?.errors?.newIngredientAmount}
+            value={createIngredientForm.amount}
+            onChange={(e) =>
+              setCreateIngredientForm((values) => ({
+                ...values,
+                amount: e.target.value,
+              }))
+            }
           />
           <ErrorMessage>{actionData?.errors?.newIngredientAmount}</ErrorMessage>
         </div>
@@ -342,10 +370,21 @@ export default function RecipeDetail() {
             name="newIngredientName"
             className="border-b-gray-200"
             error={!!actionData?.errors?.newIngredientName}
+            value={createIngredientForm.name}
+            onChange={(e) =>
+              setCreateIngredientForm((values) => ({
+                ...values,
+                name: e.target.value,
+              }))
+            }
           />
           <ErrorMessage>{actionData?.errors?.newIngredientName}</ErrorMessage>
         </div>
-        <button name="_action" value="createIngredient">
+        <button
+          name="_action"
+          value="createIngredient"
+          onClick={() => createIngredient()}
+        >
           <SaveIcon />
         </button>
       </div>
