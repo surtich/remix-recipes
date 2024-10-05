@@ -383,7 +383,10 @@ export default function RecipeDetail() {
         <button
           name="_action"
           value="createIngredient"
-          onClick={() => createIngredient()}
+          onClick={(e) => {
+            e.preventDefault();
+            createIngredient();
+          }}
         >
           <SaveIcon />
         </button>
