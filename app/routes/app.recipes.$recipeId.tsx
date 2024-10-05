@@ -352,7 +352,12 @@ export default function RecipeDetail() {
             autoComplete="off"
             name="newIngredientAmount"
             className="border-b-gray-200"
-            error={!!actionData?.errors?.newIngredientAmount}
+            error={
+              !!(
+                createIngredientFetcher.data?.errors?.newIngredientAmount ??
+                actionData?.errors?.newIngredientAmount
+              )
+            }
             value={createIngredientForm.amount}
             onChange={(e) =>
               setCreateIngredientForm((values) => ({
@@ -361,7 +366,10 @@ export default function RecipeDetail() {
               }))
             }
           />
-          <ErrorMessage>{actionData?.errors?.newIngredientAmount}</ErrorMessage>
+          <ErrorMessage>
+            {createIngredientFetcher.data?.errors?.newIngredientAmount ??
+              actionData?.errors?.newIngredientAmount}
+          </ErrorMessage>
         </div>
         <div>
           <Input
@@ -369,7 +377,12 @@ export default function RecipeDetail() {
             autoComplete="off"
             name="newIngredientName"
             className="border-b-gray-200"
-            error={!!actionData?.errors?.newIngredientName}
+            error={
+              !!(
+                createIngredientFetcher.data?.errors?.newIngredientName ??
+                actionData?.errors?.newIngredientName
+              )
+            }
             value={createIngredientForm.name}
             onChange={(e) =>
               setCreateIngredientForm((values) => ({
@@ -378,7 +391,10 @@ export default function RecipeDetail() {
               }))
             }
           />
-          <ErrorMessage>{actionData?.errors?.newIngredientName}</ErrorMessage>
+          <ErrorMessage>
+            {createIngredientFetcher.data?.errors?.newIngredientName ??
+              actionData?.errors?.newIngredientName}
+          </ErrorMessage>
         </div>
         <button
           name="_action"
