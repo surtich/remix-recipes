@@ -339,6 +339,29 @@ function IngredientRow({
   name,
   nameError,
 }: IngredientRowProps) {
+  const saveAmountFetcher = useFetcher<any>();
+  const saveNameFetcher = useFetcher<any>();
+
+  const saveAmount = (amount: string) =>
+    saveAmountFetcher.submit(
+      {
+        _action: "saveIngredientAmount",
+        amount,
+        id,
+      },
+      { method: "post" }
+    );
+
+  const saveName = (name: string) =>
+    saveNameFetcher.submit(
+      {
+        _action: "saveIngredientName",
+        name,
+        id,
+      },
+      { method: "post" }
+    );
+
   return (
     <React.Fragment>
       {/* React.Fragment permite introducir una key */}
@@ -350,10 +373,12 @@ function IngredientRow({
           autoComplete="off"
           defaultValue={amount ?? ""}
           name="ingredientAmounts[]"
-          error={!!amountError}
+          error={!!(saveAmountFetcher?.data?.errors?.amount ?? amountError)}
+          onChange={(e) => saveAmount(e.target.value)}
         />
-        {/* Se añade [] al name para indicar que es un array */}
-        <ErrorMessage>{amountError}</ErrorMessage>
+        <ErrorMessage>
+          {saveAmountFetcher?.data?.errors?.amount ?? amountError}
+        </ErrorMessage>
       </div>
       <div>
         <Input
@@ -362,10 +387,12 @@ function IngredientRow({
           autoComplete="off"
           name="ingredientNames[]"
           defaultValue={name ?? ""}
-          error={!!nameError}
+          error={!!(saveNameFetcher?.data?.errors?.name ?? nameError)}
+          onChange={(e) => saveName(e.target.value)}
         />
-        {/* Se añade [] al name para indicar que es un array */}
-        <ErrorMessage>{nameError}</ErrorMessage>
+        <ErrorMessage>
+          {saveNameFetcher?.data?.errors?.name ?? nameError}
+        </ErrorMessage>
       </div>
       <button name="_action" value={`deleteIngredient.${id}`}>
         <TrashIcon />
