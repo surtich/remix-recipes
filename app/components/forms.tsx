@@ -6,6 +6,7 @@ import type {
   InputHTMLAttributes,
 } from "react";
 import { SearchIcon } from "./icons";
+import React from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
@@ -116,16 +117,22 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: boolean;
 }
 
-export function Input({ error, className, ...props }: InputProps) {
-  return (
-    <input
-      className={classNames(
-        "w-full outline-none",
-        "border-b-2 border-b-background focus:border-b-primary",
-        error ? "border-b-red-600" : "",
-        className
-      )}
-      {...props}
-    />
-  );
-}
+// Para que TypeScript no se queje de que no se está pasando el ref, se puede usar React.forwardRef
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ error, className, ...props }, ref) => {
+    return (
+      <input
+        ref={ref}
+        className={classNames(
+          "w-full outline-none",
+          "border-b-2 border-b-background focus:border-b-primary",
+          error ? "border-b-red-600" : "",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
+);
+
+Input.displayName = "Input";
