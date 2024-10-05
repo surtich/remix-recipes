@@ -8,6 +8,7 @@ import {
   Form,
   NavLink,
   Outlet,
+  useFetchers,
   useLoaderData,
   useLocation,
   useNavigation,
@@ -65,6 +66,7 @@ export default function Recipes() {
   const data = useLoaderData<typeof loader>();
   const location = useLocation(); // es lo mismo que la URL actual. Ver: https://developer.mozilla.org/en-US/docs/Web/API/Location
   const navigation = useNavigation(); // location es la URL actual, navigation es la URL a la que se va a ir
+  const fetchers = useFetchers(); // obtiene todos los fetchers d ela página actual
 
   return (
     <RecipePageWrapper>
@@ -81,6 +83,22 @@ export default function Recipes() {
         <ul>
           {data?.recipes.map((recipe) => {
             const loading = navigation.location?.pathname.endsWith(recipe.id);
+
+            const optimisticData = new Map();
+
+            for (const fetcher of fetchers) {
+              if (fetcher.formAction?.includes(recipe.id)) {
+                if (fetcher.formData?.get("_action") === "saveName") {
+                  optimisticData.set("name", fetcher.formData?.get("name"));
+                }
+                if (fetcher.formData?.get("_action") === "saveTotalTime") {
+                  optimisticData.set(
+                    "totalTime",
+                    fetcher.formData?.get("totalTime")
+                  );
+                }
+              }
+            }
             return (
               <li className="my-4" key={recipe.id}>
                 <NavLink
@@ -93,8 +111,10 @@ export default function Recipes() {
                 >
                   {({ isActive }) => (
                     <RecipeCard
-                      name={recipe.name}
-                      totalTime={recipe.totalTime}
+                      name={optimisticData.get("name") ?? recipe.name}
+                      totalTime={
+                        optimisticData.get("totalTime") ?? recipe.totalTime
+                      }
                       imageUrl={recipe.imageUrl}
                       isActive={isActive}
                       isLoading={loading}
