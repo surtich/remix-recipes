@@ -14,7 +14,6 @@ import {
 } from "@remix-run/react";
 import classNames from "classnames";
 import React from "react";
-import { FetchResult } from "vite/runtime";
 import { z } from "zod";
 import {
   DeleteButton,
@@ -54,17 +53,29 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({ recipe }, { headers: { "Cache-Control": "max-age=10" } }); // 10 seconds
 }
 
+const saveNameSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+});
+
+const saveTotalTimeSchema = z.object({
+  totalTime: z.string().min(1, "Total time is required"),
+});
+
+const saveInstructionsSchema = z.object({
+  instructions: z.string().min(1, "Instructions is required"),
+});
+
 const saveRecipeSchema = z
   .object({
-    name: z.string().min(1, "Name is required"),
-    totalTime: z.string().min(1, "Total time is required"),
-    instructions: z.string().min(1, "Instructions is required"),
     ingredientIds: z
       .array(z.string().min(1, "Ingredient ID is required"))
       .optional(),
     ingredientAmounts: z.array(z.string().nullable()).optional(),
     ingredientNames: z.array(z.string().min(1, "Name is required")).optional(),
   })
+  .and(saveNameSchema) // para no repetir las validaciones de name, totalTime e instructions se reutilizan sus esquemas.
+  .and(saveTotalTimeSchema)
+  .and(saveInstructionsSchema)
   .refine(
     (data) =>
       data.ingredientIds?.length === data.ingredientAmounts?.length &&
@@ -155,6 +166,31 @@ export async function action({ request, params }: ActionFunctionArgs) {
     case "deleteRecipe": {
       await handleDelete(() => db.recipe.delete({ where: { id: recipeId } }));
       return redirect("/app/recipes");
+    }
+
+    case "saveName": {
+      return validateForm(
+        formData,
+        saveNameSchema,
+        async (data) => db.recipe.update({ where: { id: recipeId }, data }),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    case "saveTotalTime": {
+      return validateForm(
+        formData,
+        saveTotalTimeSchema,
+        async (data) => db.recipe.update({ where: { id: recipeId }, data }),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    case "saveInstructions": {
+      return validateForm(
+        formData,
+        saveInstructionsSchema,
+        async (data) => db.recipe.update({ where: { id: recipeId }, data }),
+        (errors) => json({ errors }, { status: 400 })
+      );
     }
     default: {
       return null;
