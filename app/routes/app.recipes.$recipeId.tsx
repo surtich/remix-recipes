@@ -351,6 +351,7 @@ export default function RecipeDetail() {
             name={ingredient.name}
             amountError={actionData?.errors?.[`ingredientAmounts.${idx}`]}
             nameError={actionData?.errors?.[`ingredientNames.${idx}`]}
+            isOptimistic={ingredient.isOptimistic}
           />
         ))}
         <div>
@@ -465,6 +466,7 @@ type IngredientRowProps = {
   amountError?: string;
   name: string;
   nameError?: string;
+  isOptimistic?: boolean;
 };
 
 function IngredientRow({
@@ -473,6 +475,7 @@ function IngredientRow({
   amountError,
   name,
   nameError,
+  isOptimistic,
 }: IngredientRowProps) {
   const saveAmountFetcher = useFetcher<any>();
   const saveNameFetcher = useFetcher<any>();
@@ -512,6 +515,7 @@ function IngredientRow({
           name="ingredientAmounts[]"
           error={!!(saveAmountFetcher?.data?.errors?.amount ?? amountError)}
           onChange={(e) => saveAmount(e.target.value)}
+          disabled={isOptimistic}
         />
         <ErrorMessage>
           {saveAmountFetcher?.data?.errors?.amount ?? amountError}
@@ -526,6 +530,7 @@ function IngredientRow({
           defaultValue={name ?? ""}
           error={!!(saveNameFetcher?.data?.errors?.name ?? nameError)}
           onChange={(e) => saveName(e.target.value)}
+          disabled={isOptimistic}
         />
         <ErrorMessage>
           {saveNameFetcher?.data?.errors?.name ?? nameError}
