@@ -1,5 +1,5 @@
 import { useMatches } from "@remix-run/react";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 export function useMatchesData(id: string) {
   const matches = useMatches();
@@ -29,4 +29,17 @@ export function useIsHydrated() {
   }, []);
 
   return isHydrated;
+}
+
+export function useDebouncedFunction<T extends Array<any>>(
+  fn: (...args: T) => unknown,
+  time: number = 1000
+) {
+  const timeoutid = useRef<number>(); // if we use useState, it will trigger re-render everytime timtout id changes
+  const deboundedFn = (...args: T) => {
+    window.clearTimeout(timeoutid.current); // cancel the timeout and restart it when debouncedFn is called
+    timeoutid.current = window.setTimeout(() => fn(...args), time); // we want to call this fn until debouncedFn hasn't been called for this amount of time
+  };
+
+  return deboundedFn;
 }

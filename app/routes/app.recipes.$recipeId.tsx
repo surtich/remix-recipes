@@ -25,6 +25,7 @@ import { SaveIcon, TimeIcon, TrashIcon } from "~/components/icons";
 import db from "~/db.server";
 import { handleDelete } from "~/models/utils";
 import { requiredLoggedInUser } from "~/utils/auth.server";
+import { useDebouncedFunction } from "~/utils/misc";
 import { validateForm } from "~/utils/validation";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -235,32 +236,35 @@ export default function RecipeDetail() {
   const saveTotalTimeFetcher = useFetcher<any>();
   const saveInstructionsFetcher = useFetcher<any>();
 
-  const saveName = (name: string) =>
+  const saveName = useDebouncedFunction((name: string) =>
     saveNameFetcher.submit(
       {
         _action: "saveName",
         name,
       },
       { method: "post" }
-    );
+    )
+  );
 
-  const saveTotalTime = (totalTime: string) =>
+  const saveTotalTime = useDebouncedFunction((totalTime: string) =>
     saveTotalTimeFetcher.submit(
       {
         _action: "saveTotalTime",
         totalTime,
       },
       { method: "post" }
-    );
+    )
+  );
 
-  const saveInstructions = (instructions: string) =>
+  const saveInstructions = useDebouncedFunction((instructions: string) =>
     saveInstructionsFetcher.submit(
       {
         _action: "saveInstructions",
         instructions,
       },
       { method: "post" }
-    );
+    )
+  );
 
   return (
     <Form method="post" reloadDocument>
@@ -408,7 +412,7 @@ function IngredientRow({
   const saveAmountFetcher = useFetcher<any>();
   const saveNameFetcher = useFetcher<any>();
 
-  const saveAmount = (amount: string) =>
+  const saveAmount = useDebouncedFunction((amount: string) =>
     saveAmountFetcher.submit(
       {
         _action: "saveIngredientAmount",
@@ -416,9 +420,10 @@ function IngredientRow({
         id,
       },
       { method: "post" }
-    );
+    )
+  );
 
-  const saveName = (name: string) =>
+  const saveName = useDebouncedFunction((name: string) =>
     saveNameFetcher.submit(
       {
         _action: "saveIngredientName",
@@ -426,7 +431,8 @@ function IngredientRow({
         id,
       },
       { method: "post" }
-    );
+    )
+  );
 
   return (
     <React.Fragment>
