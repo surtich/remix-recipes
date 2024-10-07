@@ -2,12 +2,14 @@ import { Form, Link } from "@remix-run/react";
 import ReactModal from "react-modal";
 import { DeleteButton, IconInput, PrimaryButton } from "~/components/forms";
 import { XIcon } from "~/components/icons";
+import { useRecipeContext } from "./app.recipes.$recipeId";
 
 if (typeof window !== "undefined") {
   ReactModal.setAppElement("body"); // un selector válido en css
 }
 
 export default function UpdateMealPlan() {
+  const { recipeName, mealPlanMultiplier } = useRecipeContext();
   return (
     <ReactModal isOpen className="md:h-fit lg:w-1/2 md:mx-auto md:mt-24">
       <div className="p-4 rounded-md bg-white shadow-md">
@@ -21,18 +23,20 @@ export default function UpdateMealPlan() {
           </Link>
         </div>
         <Form method="post" reloadDocument>
-          <h2 className="mb-2">Recipe Name</h2>
+          <h2 className="mb-2">{recipeName}</h2>
           <IconInput
             icon={<XIcon />}
-            defaultValue={1}
+            defaultValue={mealPlanMultiplier ?? 1}
             type="number"
             autoComplete="off"
             name="mealPlanMuiltiplier"
           />
           <div className="flex justify-end gap-4 mt-8">
-            <DeleteButton name="_action" value="removeFromMealPlan">
-              Remove from Meal Plan
-            </DeleteButton>
+            {mealPlanMultiplier !== null ? (
+              <DeleteButton name="_action" value="removeFromMealPlan">
+                Remove from Meal Plan
+              </DeleteButton>
+            ) : null}
             <PrimaryButton name="_action" value="updateMealPlan">
               Save
             </PrimaryButton>
