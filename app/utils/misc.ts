@@ -43,3 +43,14 @@ export function useDebouncedFunction<T extends Array<any>>(
 
   return deboundedFn;
 }
+
+export function useBuildSearchParams() {
+  const location = useLocation(); // información de la URL actual
+
+  // actualiza un search parameter de la URL
+  return (name: string, value: string) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set(name, value);
+    return `?${searchParams.toString()}`;
+  };
+}
