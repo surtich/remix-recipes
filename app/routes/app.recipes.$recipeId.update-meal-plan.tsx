@@ -15,7 +15,10 @@ import { z } from "zod";
 import { validateForm } from "~/utils/validation";
 
 const updateMealPlanSchema = z.object({
-  mealPlanMultiplier: z.number().min(1),
+  mealPlanMultiplier: z.preprocess(
+    (value) => parseInt(value as string),
+    z.number().min(1)
+  ),
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
