@@ -36,6 +36,7 @@ import {
 } from "~/components/icons";
 import db from "~/db.server";
 import { handleDelete } from "~/models/utils";
+import { canChangeRecipe } from "~/utils/abilities.server";
 import { requiredLoggedInUser } from "~/utils/auth.server";
 import { useDebouncedFunction, useServerLayoutEffect } from "~/utils/misc";
 import { validateForm } from "~/utils/validation";
@@ -116,23 +117,8 @@ const createIngredientSchema = z.object({
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const user = await requiredLoggedInUser(request);
   const recipeId = String(params.recipeId);
-
-  const recipe = await db.recipe.findUnique({
-    where: { id: recipeId },
-  });
-
-  if (recipe === null) {
-    throw json({ message: "Recipe not found" }, { status: 404 });
-  }
-
-  if (recipe.userId !== user.id) {
-    throw json(
-      { message: "You're not authorized to make changes on this recipe" },
-      { status: 401 }
-    );
-  }
+  canChangeRecipe(request, recipeId);
 
   let formData: FormData;
   if (request.headers.get("Content-Type")?.includes("multipart/form-data")) {

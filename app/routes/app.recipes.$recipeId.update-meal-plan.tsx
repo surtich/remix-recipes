@@ -3,6 +3,13 @@ import ReactModal from "react-modal";
 import { DeleteButton, IconInput, PrimaryButton } from "~/components/forms";
 import { XIcon } from "~/components/icons";
 import { useRecipeContext } from "./app.recipes.$recipeId";
+import { ActionFunctionArgs } from "@remix-run/node";
+import { canChangeRecipe } from "~/utils/abilities.server";
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const recipeId = String(params.recipeId);
+  canChangeRecipe(request, recipeId);
+}
 
 if (typeof window !== "undefined") {
   ReactModal.setAppElement("body"); // un selector válido en css
