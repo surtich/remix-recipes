@@ -1,5 +1,6 @@
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import ReactModal from "react-modal";
+import { DeleteButton, IconInput, PrimaryButton } from "~/components/forms";
 import { XIcon } from "~/components/icons";
 
 if (typeof window !== "undefined") {
@@ -19,6 +20,24 @@ export default function UpdateMealPlan() {
             <XIcon />
           </Link>
         </div>
+        <Form method="post" reloadDocument>
+          <h2 className="mb-2">Recipe Name</h2>
+          <IconInput
+            icon={<XIcon />}
+            defaultValue={1}
+            type="number"
+            autoComplete="off"
+            name="mealPlanMuiltiplier"
+          />
+          <div className="flex justify-end gap-4 mt-8">
+            <DeleteButton name="_action" value="removeFromMealPlan">
+              Remove from Meal Plan
+            </DeleteButton>
+            <PrimaryButton name="_action" value="updateMealPlan">
+              Save
+            </PrimaryButton>
+          </div>
+        </Form>
       </div>
     </ReactModal>
   );
