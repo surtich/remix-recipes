@@ -459,6 +459,18 @@ export default function RecipeDetail() {
         {saveInstructionsFetcher?.data?.errors?.instructions ||
           actionData?.errors?.instructions}
       </ErrorMessage>
+      <label
+        htmlFor="image"
+        className="block font-bold text-sm pb-2 w-fit mt-4"
+      >
+        Image
+      </label>
+      <input
+        type="file"
+        id="image"
+        name="image"
+        key={`${data.recipe?.id}.image`} // Se necesita una key para que cuando se cambie de receta, se actualice la imagen.
+      />
       <hr className="my-4" />
       <div className="flex justify-between">
         <DeleteButton name="_action" value="deleteRecipe">
