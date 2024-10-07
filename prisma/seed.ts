@@ -5,7 +5,7 @@ const db = new PrismaClient();
 function createUser() {
   return db.user.create({
     data: {
-      email: "me@example.com",
+      email: "q",
       firstName: "Alice",
       lastName: "Johnson",
     },

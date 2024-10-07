@@ -1,3 +1,5 @@
+import ReactModal from "react-modal";
+
 export default function UpdateMealPlan() {
-  return <div>Update Meal Plan</div>;
+  return <ReactModal isOpen>Update Meal Plan</ReactModal>;
 }
