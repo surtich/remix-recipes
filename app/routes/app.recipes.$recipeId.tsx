@@ -86,6 +86,7 @@ const saveIngredientNameSchema = z.object({
 
 const saveRecipeSchema = z
   .object({
+    imageUrl: z.string().optional(),
     ingredientIds: z.array(ingredientId).optional(),
     ingredientAmounts: z.array(ingredientAmount).optional(),
     ingredientNames: z.array(ingredientName).optional(),
@@ -154,6 +155,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
       unstable_createMemoryUploadHandler()
     );
     formData = await unstable_parseMultipartFormData(request, uploadHandler);
+    const image = formData.get("image") as File;
+
+    if (image.size !== 0) {
+      const imageUrl = `/images/${image.name}`;
+      formData.set("imageUrl", imageUrl);
+    }
   } else {
     formData = await request.formData();
   }
