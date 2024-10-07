@@ -297,7 +297,7 @@ export default function RecipeDetail() {
   };
 
   return (
-    <Form method="post" reloadDocument>
+    <Form method="post" encType="multipart/form-data" reloadDocument>
       <button name="_action" value="saveRecipe" className="hidden"></button>
       <div className="mb-2">
         <Input
