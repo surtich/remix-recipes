@@ -36,7 +36,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
       userId: user.id,
       name: { contains: q ?? "", mode: "insensitive" },
     },
-    select: { name: true, totalTime: true, imageUrl: true, id: true },
+    select: {
+      name: true,
+      totalTime: true,
+      mealPlanMultiplier: true,
+      imageUrl: true,
+      id: true,
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -115,6 +121,7 @@ export default function Recipes() {
                       totalTime={
                         optimisticData.get("totalTime") ?? recipe.totalTime
                       }
+                      mealPlanMultiplier={recipe.mealPlanMultiplier}
                       imageUrl={recipe.imageUrl}
                       isActive={isActive}
                       isLoading={loading}

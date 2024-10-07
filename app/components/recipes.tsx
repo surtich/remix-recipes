@@ -37,6 +37,7 @@ export function RecipeDetailWrapper({ children }: RecipeDetailWrapperProps) {
 type RecipeCardProps = {
   name: string;
   totalTime: string;
+  mealPlanMultiplier: number | null;
   imageUrl?: string;
   isActive?: boolean;
   isLoading?: boolean;
@@ -44,10 +45,12 @@ type RecipeCardProps = {
 export function RecipeCard({
   name,
   totalTime,
+  mealPlanMultiplier,
   imageUrl,
   isActive,
   isLoading,
 }: RecipeCardProps) {
+  console.log("RecipeCard", mealPlanMultiplier);
   return (
     <div
       className={classNames(
@@ -63,6 +66,11 @@ export function RecipeCard({
       <div className="p-4 flex-grow">
         <h3 className="font-semibold mb-1 text-left">
           {name}
+          {mealPlanMultiplier !== null ? (
+            <>&nbsp;(x{mealPlanMultiplier})</>
+          ) : (
+            ""
+          )}
           {isLoading ? "..." : ""}
         </h3>
         <div
