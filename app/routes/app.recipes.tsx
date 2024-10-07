@@ -13,6 +13,7 @@ import {
   useLoaderData,
   useLocation,
   useNavigation,
+  useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
 import { PrimaryButton, SearchBar } from "~/components/forms";
@@ -75,6 +76,8 @@ export default function Recipes() {
   const location = useLocation(); // es lo mismo que la URL actual. Ver: https://developer.mozilla.org/en-US/docs/Web/API/Location
   const navigation = useNavigation(); // location es la URL actual, navigation es la URL a la que se va a ir
   const fetchers = useFetchers(); // obtiene todos los fetchers d ela página actual
+  const [searchParams] = useSearchParams();
+  const mealPlanOnlyFilterOn = searchParams.get("filter") === "mealPlanOnly";
 
   return (
     <RecipePageWrapper>
@@ -83,10 +86,10 @@ export default function Recipes() {
           <SearchBar placeholder="Search recipes..." className="flex-grow" />
           <Link // es más sencillo usar un Link que un Form ya que no se necesita enviar datos al servidor como era el caso del <SearchBar />
             reloadDocument
-            to="?filter=mealPlanOnly" //
+            to={mealPlanOnlyFilterOn ? "?filter=" : "?filter=mealPlanOnly"}
             className={classNames(
-              "flex flex-col justify-center border-2 border-primary rounded-md",
-              "p-2 text-primary"
+              "flex flex-col justify-center border-2 border-primary rounded-md px-2",
+              mealPlanOnlyFilterOn ? "text-white bg-primary" : "text-primary"
             )}
           >
             <CalendarIcon />
