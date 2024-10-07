@@ -31,13 +31,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requiredLoggedInUser(request);
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
+  const filter = url.searchParams.get("filter");
 
   // En esta sección del código accedemos directamente a la base de datos para obtener las recetas del usuario
-  // En un proyecto real habría que decidir se se usan modelos o se accede directamente en la vista a la DB. Nunca se deberían mezclar ambas alternativas.
+  // En un proyecto real habría que decidir si se usan modelos o se accede directamente en la vista a la DB. Nunca se deberían mezclar ambas alternativas.
   const recipes = await db.recipe.findMany({
     where: {
       userId: user.id,
-      name: { contains: q ?? "", mode: "insensitive" },
+      name: {
+        contains: q ?? "",
+        mode: "insensitive",
+      },
+      mealPlanMultiplier: filter === "mealPlanOnly" ? { not: null } : {},
     },
     select: {
       name: true,

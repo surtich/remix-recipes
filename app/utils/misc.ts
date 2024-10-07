@@ -1,4 +1,4 @@
-import { useMatches } from "@remix-run/react";
+import { useLocation, useMatches } from "@remix-run/react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 export function useMatchesData(id: string) {
