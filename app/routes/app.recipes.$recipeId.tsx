@@ -3,6 +3,10 @@ import {
   json,
   LoaderFunctionArgs,
   redirect,
+  unstable_composeUploadHandlers,
+  unstable_createFileUploadHandler,
+  unstable_createMemoryUploadHandler,
+  unstable_parseMultipartFormData,
 } from "@remix-run/node";
 import {
   Form,
@@ -121,7 +125,39 @@ export async function action({ request, params }: ActionFunctionArgs) {
     );
   }
 
-  const formData = await request.formData();
+  let formData: FormData;
+  if (request.headers.get("Content-Type")?.includes("multipart/form-data")) {
+    /* Esta sería una función genérica para manejar un formulario multipart.
+       Sin embargo, Remix tiene funciones específicas para casos característicos.
+    const uploadHandler = ({ fileName, contentType, name, data }) => {
+      // return File | string | null | undefined // Si esta función retorna File o String, la función parseMultipartFormData() incluye el resultado en el objeto formData
+      
+    };
+    */
+    /* Esta función haría lo mismo que request.formData() que es ineficiente al trabajar en memoria con el fichero completo. 
+    const uploadHandler = unstable_createMemoryUploadHandler();
+    */
+
+    /* Esta función es más eficiente al trabajar con ficheros grandes, ya que los guarda en disco haciendo streaming.
+    El problema es que sólo puede trabajar con ficheros, no con atributos calve=valor.
+    const uploadHandler = unstable_createFileUploadHandler();
+    */
+
+    /* Esta función usa primero el primer uploadHadler y  si retorna null o undefined usa el segundo-
+    El orden es importante porque el primer handler se ejecuta primero y sin
+    ponemos un memoryUploadHandler primero funcionará con todos los parámetros, aunque de forma ineficiente para ficheros, y nunca se ejecutará el segundo.
+    */
+    const uploadHandler = unstable_composeUploadHandlers(
+      unstable_createFileUploadHandler({
+        directory: "public/images", // el directorio public de Remix es públicamente accesible.
+      }), // por defecto almacena la imagen en el directorio temporal de node (ejecutar en node os.tmpdir()).
+      unstable_createMemoryUploadHandler()
+    );
+    formData = await unstable_parseMultipartFormData(request, uploadHandler);
+  } else {
+    formData = await request.formData();
+  }
+
   const _action = formData.get("_action");
 
   if (typeof _action === "string" && _action.startsWith("deleteIngredient.")) {
