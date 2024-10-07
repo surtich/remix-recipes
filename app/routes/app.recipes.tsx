@@ -6,6 +6,7 @@ import {
 } from "@remix-run/node";
 import {
   Form,
+  Link,
   NavLink,
   Outlet,
   useFetchers,
@@ -80,14 +81,16 @@ export default function Recipes() {
       <RecipeListWrapper>
         <div className="flex gap-4">
           <SearchBar placeholder="Search recipes..." className="flex-grow" />
-          <button
+          <Link // es más sencillo usar un Link que un Form ya que no se necesita enviar datos al servidor como era el caso del <SearchBar />
+            reloadDocument
+            to="?filter=mealPlanOnly" //
             className={classNames(
               "flex flex-col justify-center border-2 border-primary rounded-md",
               "p-2 text-primary"
             )}
           >
             <CalendarIcon />
-          </button>
+          </Link>
         </div>
         <Form method="post" className="mt-4" reloadDocument>
           <PrimaryButton className="w-full">
