@@ -109,6 +109,11 @@ export function SearchBar({
         placeholder={placeholder}
         className="w-full py-3 px-2 outline-none rounded-md"
       />
+      {Array.from(searchParams.entries()).map(([name, value], index) =>
+        name === "q" ? null : ( // ya parámetro q ya está incluido en el formulario
+          <input key={index} type="hidden" name={name} value={value} />
+        )
+      )}
     </Form>
   );
 }
