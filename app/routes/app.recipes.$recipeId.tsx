@@ -11,6 +11,7 @@ import {
 import {
   Form,
   isRouteErrorResponse,
+  Link,
   Outlet,
   useActionData,
   useFetcher,
@@ -26,7 +27,12 @@ import {
   Input,
   PrimaryButton,
 } from "~/components/forms";
-import { SaveIcon, TimeIcon, TrashIcon } from "~/components/icons";
+import {
+  CalendarIcon,
+  SaveIcon,
+  TimeIcon,
+  TrashIcon,
+} from "~/components/icons";
 import db from "~/db.server";
 import { handleDelete } from "~/models/utils";
 import { requiredLoggedInUser } from "~/utils/auth.server";
@@ -345,26 +351,32 @@ export default function RecipeDetail() {
       <Outlet />
       <Form method="post" encType="multipart/form-data" reloadDocument>
         <button name="_action" value="saveRecipe" className="hidden"></button>
-        <div className="mb-2">
-          <Input
-            key={data.recipe.id}
-            type="text"
-            placeholder="Recipe Name"
-            autoComplete="off"
-            className="text-2xl font-extrabold"
-            name="name"
-            defaultValue={data.recipe.name}
-            error={
-              !!(
-                saveNameFetcher?.data?.errors?.name || actionData?.errors?.name
-              )
-            }
-            onChange={(e) => saveName(e.target.value)}
-          />
-          {/* actionData sólo contiene errores si se produce una recarga de la página cnado se pulsa save, por eso se añaden los errores del fetcher */}
-          <ErrorMessage>
-            {saveNameFetcher?.data?.errors?.name || actionData?.errors?.name}
-          </ErrorMessage>
+        <div className="flex mb-2 ">
+          <Link to="update-meal-plan" className="flex flex-col justify-center">
+            <CalendarIcon />
+          </Link>
+          <div className="ml-2 flex-grow">
+            <Input
+              key={data.recipe.id}
+              type="text"
+              placeholder="Recipe Name"
+              autoComplete="off"
+              className="text-2xl font-extrabold"
+              name="name"
+              defaultValue={data.recipe.name}
+              error={
+                !!(
+                  saveNameFetcher?.data?.errors?.name ||
+                  actionData?.errors?.name
+                )
+              }
+              onChange={(e) => saveName(e.target.value)}
+            />
+            {/* actionData sólo contiene errores si se produce una recarga de la página cnado se pulsa save, por eso se añaden los errores del fetcher */}
+            <ErrorMessage>
+              {saveNameFetcher?.data?.errors?.name || actionData?.errors?.name}
+            </ErrorMessage>
+          </div>
         </div>
         <div className="flex">
           <TimeIcon />
