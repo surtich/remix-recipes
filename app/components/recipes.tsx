@@ -50,7 +50,6 @@ export function RecipeCard({
   isActive,
   isLoading,
 }: RecipeCardProps) {
-  console.log("RecipeCard", mealPlanMultiplier);
   return (
     <div
       className={classNames(

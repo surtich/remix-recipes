@@ -13,8 +13,9 @@ import {
   useLocation,
   useNavigation,
 } from "@remix-run/react";
+import classNames from "classnames";
 import { PrimaryButton, SearchBar } from "~/components/forms";
-import { PlusIcon } from "~/components/icons";
+import { CalendarIcon, PlusIcon } from "~/components/icons";
 import {
   RecipeCard,
   RecipeDetailWrapper,
@@ -77,7 +78,17 @@ export default function Recipes() {
   return (
     <RecipePageWrapper>
       <RecipeListWrapper>
-        <SearchBar placeholder="Search recipes..." />
+        <div className="flex gap-4">
+          <SearchBar placeholder="Search recipes..." className="flex-grow" />
+          <button
+            className={classNames(
+              "flex flex-col justify-center border-2 border-primary rounded-md",
+              "p-2 text-primary"
+            )}
+          >
+            <CalendarIcon />
+          </button>
+        </div>
         <Form method="post" className="mt-4" reloadDocument>
           <PrimaryButton className="w-full">
             <div className="flex w-full justify-center">
