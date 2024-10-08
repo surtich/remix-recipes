@@ -60,21 +60,42 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const user = await requiredLoggedInUser(request);
-  const recipe = await db.recipe.create({
-    data: {
-      userId: user.id,
-      name: "New Recipe",
-      totalTime: "0 minutes",
-      imageUrl: "https://via.placeholder.com/150?text=Remix+Recipes",
-      instructions: "",
-    },
-  });
+  const formData = await request.formData();
 
-  const url = new URL(request.url);
-  // Hacemos esto para cambiar la URL pero preservar los parámetros de búsqueda
-  url.pathname = `/app/recipes/${recipe.id}`;
+  switch (formData.get("_action")) {
+    case "createRecipe": {
+      const recipe = await db.recipe.create({
+        data: {
+          userId: user.id,
+          name: "New Recipe",
+          totalTime: "0 minutes",
+          imageUrl: "https://via.placeholder.com/150?text=Remix+Recipes",
+          instructions: "",
+        },
+      });
 
-  return redirect(url.toString());
+      const url = new URL(request.url);
+      // Hacemos esto para cambiar la URL pero preservar los parámetros de búsqueda
+      url.pathname = `/app/recipes/${recipe.id}`;
+
+      return redirect(url.toString());
+    }
+
+    case "clearMealPlan": {
+      await db.recipe.updateMany({
+        where: {
+          userId: user.id,
+          mealPlanMultiplier: { not: null },
+        },
+        data: { mealPlanMultiplier: null },
+      });
+      return redirect("/app/recipes");
+    }
+
+    default: {
+      return null;
+    }
+  }
 }
 
 export default function Recipes() {
@@ -107,9 +128,19 @@ export default function Recipes() {
         </div>
         <Form method="post" className="mt-4" reloadDocument>
           {mealPlanOnlyFilterOn ? (
-            <DeleteButton className="w-full">Clear Plan</DeleteButton>
+            <DeleteButton
+              name="_action"
+              value="clearMealPlan"
+              className="w-full"
+            >
+              Clear Plan
+            </DeleteButton>
           ) : (
-            <PrimaryButton className="w-full">
+            <PrimaryButton
+              name="_action"
+              value="createRecipe"
+              className="w-full"
+            >
               <div className="flex w-full justify-center">
                 <PlusIcon />
                 <span className="ml-2">Create New Recipe</span>
