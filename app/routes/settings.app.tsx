@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, json, LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 import { PrimaryButton } from "~/components/forms";
 import { themeCookie } from "~/cookies";
@@ -22,15 +22,19 @@ export async function action({ request }: ActionFunctionArgs) {
     formData,
     themeSchema,
     async ({ theme }) =>
-      json("ok", {
-        headers: { "Set-Cookie": await themeCookie.serialize(theme) },
-      }),
+      json(
+        { theme },
+        {
+          headers: { "Set-Cookie": await themeCookie.serialize(theme) },
+        }
+      ),
     (errors) => json({ errors }, { status: 400 })
   );
 }
 
 export default function SettingApp() {
   const data = useLoaderData<typeof loader>();
+  const actionData = useActionData<{ theme?: string }>();
 
   return (
     <Form reloadDocument method="post">
@@ -40,7 +44,7 @@ export default function SettingApp() {
           id="theme"
           name="theme"
           className="p-2 mt-2 border-2 border-gray-200 rounded-md w-full md:w-64"
-          defaultValue={data.theme}
+          defaultValue={actionData?.theme ?? data.theme}
         >
           <option value="red">Red</option>
           <option value="orange">Orange</option>
