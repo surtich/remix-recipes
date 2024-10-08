@@ -5,8 +5,9 @@ import {
   DiscoverRecipeHeader,
 } from "~/components/discover";
 import db from "~/db.server";
+import { hash } from "~/utils/cryptography.server";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const recipe = await db.recipe.findUnique({
     where: { id: params.recipeId },
     include: {
@@ -24,7 +25,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw json({ message: "Recipe not found" }, { status: 404 });
   }
 
-  return json({ recipe });
+  const etag = hash(JSON.stringify(recipe));
+
+  if (etag === request.headers.get("if-none-match")) {
+    return new Response(null, { status: 304 }); // not modified
+  }
+
+  return json({ recipe }, { headers: { etag } });
 }
 
 export default function DiscoverRecipe() {
