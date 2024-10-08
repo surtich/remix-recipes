@@ -11,3 +11,8 @@ export const sessionCookie = createCookie("remix-recipes__session", {
   httpOnly: true,
   secure: true,
 });
+
+// No debemos usar la cookie de sesión porque se destruye cuando el usuario se
+// desconecta y queremos mantener la información de las preferencias del usuario
+// incluso si no está conectado.
+export const themeCookie = createCookie("remix-recipes__theme");
