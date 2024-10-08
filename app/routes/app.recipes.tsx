@@ -16,7 +16,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
-import { PrimaryButton, SearchBar } from "~/components/forms";
+import { DeleteButton, PrimaryButton, SearchBar } from "~/components/forms";
 import { CalendarIcon, PlusIcon } from "~/components/icons";
 import {
   RecipeCard,
@@ -106,12 +106,16 @@ export default function Recipes() {
           </Link>
         </div>
         <Form method="post" className="mt-4" reloadDocument>
-          <PrimaryButton className="w-full">
-            <div className="flex w-full justify-center">
-              <PlusIcon />
-              <span className="ml-2">Create New Recipe</span>
-            </div>
-          </PrimaryButton>
+          {mealPlanOnlyFilterOn ? (
+            <DeleteButton className="w-full">Clear Plan</DeleteButton>
+          ) : (
+            <PrimaryButton className="w-full">
+              <div className="flex w-full justify-center">
+                <PlusIcon />
+                <span className="ml-2">Create New Recipe</span>
+              </div>
+            </PrimaryButton>
+          )}
         </Form>
         <ul>
           {data?.recipes.map((recipe) => {
