@@ -1,12 +1,8 @@
-import { Link } from "@remix-run/react";
+// redirect to app/pantry
 
-export default function Settings() {
-  return (
-    <div>
-      <nav>
-        <Link to="app">App</Link>
-        <Link to="profile">profile</Link>
-      </nav>
-    </div>
-  );
-}
+import { redirect } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+
+export const loader: LoaderFunction = () => {
+  return redirect("/settings/app", 302);
+};

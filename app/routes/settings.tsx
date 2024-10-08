@@ -1,24 +1,5 @@
-import { json, Outlet, useLoaderData } from "@remix-run/react";
+import { PageLayout } from "~/components/layout";
 
-export const loader = () => {
-  return json({ message: "Hello from Settings!" });
-};
-
-export default function SettingsLayout() {
-  const data = useLoaderData<typeof loader>();
-  return (
-    <div>
-      <h1>Settings Layout</h1>
-      <p>{data.message}</p>
-      <Outlet />
-    </div>
-  );
-}
-
-export function ErrorBoundary() {
-  return (
-    <div>
-      <h1>Something went wrong</h1>
-    </div>
-  );
+export default function Settings() {
+  return <PageLayout title="Settings" links={[{ to: "app", label: "App" }]} />;
 }
