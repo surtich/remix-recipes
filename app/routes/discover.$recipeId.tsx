@@ -31,7 +31,7 @@ export default function DiscoverRecipe() {
   const data = useLoaderData<typeof loader>();
 
   return (
-    <div>
+    <div className="md:h-[calc(100vh-1rem)] m-[-1rem] overflow-auto">
       <DiscoverRecipeHeader recipe={data.recipe} />
       <DiscoverRecipeDetails recipe={data.recipe} />
     </div>
