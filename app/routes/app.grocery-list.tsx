@@ -1,8 +1,11 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { Action } from "@prisma/client/runtime/library";
+import { ActionFunctionArgs, json, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
+import { z } from "zod";
 import { CheckCircleIcon } from "~/components/icons";
 import db from "~/db.server";
 import { requiredLoggedInUser } from "~/utils/auth.server";
+import { validateForm } from "~/utils/validation";
 
 type GroceryListItem = {
   id: string;
@@ -80,6 +83,65 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return { groceryListItems: Object.values(groceryListItems) };
 }
 
+// Obtiene la estantería de la lista de compras
+function getGroceryTripShelfName() {
+  const date = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
+
+  return `Grocery Trip - ${date}`;
+}
+
+const checkOffItemSchema = z.object({
+  name: z.string(),
+});
+
+export async function action({ request }: ActionFunctionArgs) {
+  const user = await requiredLoggedInUser(request);
+  const formData = await request.formData();
+
+  switch (formData.get("_action")) {
+    case "checkOffItem": {
+      return validateForm(
+        formData,
+        checkOffItemSchema,
+        async ({ name }) => {
+          const shelfName = getGroceryTripShelfName();
+          let shoppingTripShelf = await db.pantryShelf.findFirst({
+            where: {
+              name: shelfName,
+              userId: user.id,
+            },
+          });
+
+          if (shoppingTripShelf === null) {
+            shoppingTripShelf = await db.pantryShelf.create({
+              data: {
+                name: shelfName,
+                userId: user.id,
+              },
+            });
+          }
+
+          return db.pantryItem.create({
+            data: {
+              name,
+              shelfId: shoppingTripShelf.id,
+              userId: user.id,
+            },
+          });
+        },
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+
+    default: {
+      return null;
+    }
+  }
+}
+
 function GroceryListItem({ item }: { item: GroceryListItem }) {
   const fetcher = useFetcher();
   return fetcher.state !== "idle" ? null : (
@@ -95,6 +157,7 @@ function GroceryListItem({ item }: { item: GroceryListItem }) {
         </ul>
       </div>
       <fetcher.Form method="post" className="flex flex-col justify-center">
+        <input type="hidden" name="name" value={item.name} />
         <button
           name="_action"
           value="checkOffItem"
