@@ -1,11 +1,19 @@
-import { json, LoaderFunctionArgs } from "@remix-run/node";
+import { HeadersArgs, json, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import {
   DiscoverRecipeDetails,
   DiscoverRecipeHeader,
 } from "~/components/discover";
 import db from "~/db.server";
+import { getCurrentUser } from "~/utils/auth.server";
 import { hash } from "~/utils/cryptography.server";
+
+export function header({ loaderHeaders }: HeadersArgs) {
+  return {
+    etag: loaderHeaders.get("x-page-etag"),
+    "cache-control": `max-age=3600, stale-while-revalidate=${3600 * 24 * 7}`,
+  };
+}
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const recipe = await db.recipe.findUnique({
@@ -31,11 +39,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     return new Response(null, { status: 304 }); // not modified
   }
 
+  const user = await getCurrentUser(request);
+  const etagPage = `${hash(user?.id ?? "anonymous")}.${etag}`;
+
   return json(
     { recipe },
     {
       headers: {
         etag,
+        "x-etag-page": etagPage, // custom header. El convenio es que empiece con x-
         "cache-control": "max-age=5, stale-while-revalidate=10",
       },
     }

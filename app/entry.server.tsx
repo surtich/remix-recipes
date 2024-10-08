@@ -45,6 +45,13 @@ function handleBotRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
+  const ifNotMatch = request.headers.get("if-none-match");
+  const etag = responseHeaders.get("etag");
+
+  if (ifNotMatch !== null && etag !== null && ifNotMatch === etag) {
+    return new Response(null, { status: 304, headers: responseHeaders });
+  }
+
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(
