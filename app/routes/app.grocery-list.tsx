@@ -172,11 +172,19 @@ function GroceryListItem({ item }: { item: GroceryListItem }) {
 
 export default function GroceryList() {
   const data = useLoaderData<typeof loader>();
-  return (
+  return data.groceryListItems.length > 0 ? (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {data.groceryListItems.map((item) => (
         <GroceryListItem key={item.id} item={item} />
       ))}
+    </div>
+  ) : (
+    <div className="w-fit m-auto text-center py-16">
+      <h1 className="text-3xl">All set!</h1>
+      <div className="text-primary flex justify-center items-center py-4">
+        <CheckCircleIcon large />
+        <p>You have everything you need</p>
+      </div>
     </div>
   );
 }

@@ -250,7 +250,7 @@ export function XIcon() {
   );
 }
 
-export function CheckCircleIcon() {
+export function CheckCircleIcon({ large }: { large?: boolean }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -258,7 +258,7 @@ export function CheckCircleIcon() {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="size-8"
+      className={large ? "size-14" : "size-8"}
     >
       <path
         strokeLinecap="round"
