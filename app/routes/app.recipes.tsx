@@ -41,7 +41,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
       userId: user.id,
       name: {
         contains: q ?? "",
-        mode: "insensitive",
       },
       mealPlanMultiplier: filter === "mealPlanOnly" ? { not: null } : {},
     },

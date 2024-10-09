@@ -9,7 +9,10 @@
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc",
-    "test": "INCLUDE_TEST_ROUTES=true npx playwright test"
+    "test": "rm -rf ./prisma/test.db && DATABASE_URL=file:./test.db npx prisma db push && DATABASE_URL=file:./test.db INCLUDE_TEST_ROUTES=true npx playwright test",
+    "test-ui": "rm -rf ./prisma/test.db && DATABASE_URL=file:./test.db npx prisma db push && DATABASE_URL=file:./test.db INCLUDE_TEST_ROUTES=true npx playwright test --ui",
+    "db-view": "npx prisma studio",
+    "db-view-test": "npx prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",

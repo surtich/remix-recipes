@@ -7,7 +7,6 @@ export function getAllShelves(userId: string, query: string | null) {
       userId,
       name: {
         contains: query ?? "",
-        mode: "insensitive",
       },
     },
     include: {
