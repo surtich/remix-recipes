@@ -17,12 +17,11 @@ export default defineConfig({
           if (process.env.INCLUDE_TEST_ROUTES) {
             // Protegemos a los desarrolladores de que hagan cosas estúpidas como incluir rutas de prueba en producción
             if (process.env.NODE_ENV === "production") {
-              console.warn(
-                "You should not include test routes in production."
-              );
+              console.warn("You should not include test routes in production.");
               return;
             }
             route("__tests/login", "__test-routes__/login.tsx");
+            route("__tests/delete-user", "__test-routes__/delete-user.tsx");
           }
         }),
     }),
