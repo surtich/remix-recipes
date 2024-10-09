@@ -348,7 +348,7 @@ export default function RecipeDetail() {
           mealPlanMultiplier: data.recipe?.mealPlanMultiplier,
         }}
       />
-      <Form method="post" encType="multipart/form-data" reloadDocument>
+      <Form method="post" encType="multipart/form-data">
         <button name="_action" value="saveRecipe" className="hidden"></button>
         <div className="flex mb-2 ">
           <Link
@@ -511,10 +511,8 @@ export default function RecipeDetail() {
           className={classNames(
             "w-full h-56 rounded-md outline-none",
             "focus:border-2 focus:p-3 focus:border-primary duration-300",
-            !!(
-              saveInstructionsFetcher?.data?.errors?.instructions ||
+            saveInstructionsFetcher?.data?.errors?.instructions ||
               actionData?.errors?.instructions
-            )
               ? "border-red-500 p-3"
               : ""
           )}

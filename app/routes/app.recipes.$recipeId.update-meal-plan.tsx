@@ -76,7 +76,7 @@ export default function UpdateMealPlan() {
             <XIcon />
           </Link>
         </div>
-        <Form method="post" reloadDocument>
+        <Form method="post">
           <h2 className="mb-2">{recipeName}</h2>
           <IconInput
             icon={<XIcon />}

@@ -112,7 +112,6 @@ export default function Recipes() {
         <div className="flex gap-4">
           <SearchBar placeholder="Search recipes..." className="flex-grow" />
           <Link // es más sencillo usar un Link que un Form ya que no se necesita enviar datos al servidor como era el caso del <SearchBar />
-            reloadDocument
             to={buildSearchParams(
               "filter",
               mealPlanOnlyFilterOn ? "" : "mealPlanOnly"
@@ -125,7 +124,7 @@ export default function Recipes() {
             <CalendarIcon />
           </Link>
         </div>
-        <Form method="post" className="mt-4" reloadDocument>
+        <Form method="post" className="mt-4">
           {mealPlanOnlyFilterOn ? (
             <DeleteButton
               name="_action"
