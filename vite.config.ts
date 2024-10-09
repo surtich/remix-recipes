@@ -10,6 +10,11 @@ export default defineConfig({
         v3_relativeSplatPath: true,
         v3_throwAbortReason: true,
       },
+      routes: (defineRoutes) =>
+        defineRoutes((route) => {
+          //ver: https://remix.run/docs/en/main/file-conventions/vite-config#routes
+          route("__tests/login", "__test-routes__/login.tsx");
+        }),
     }),
     tsconfigPaths(),
   ],
